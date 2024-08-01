@@ -1,0 +1,59 @@
+/* SearchContact.css */
+
+.input-group {
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.custom-input-group-text {
+    background-color: #6f42c1;
+    /* رنگ بنفش ملایم */
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    padding: 0.5rem;
+}
+
+.custom-input-group-text:hover {
+    background-color: #5a2a91;
+    /* رنگ بنفش تیره‌تر هنگام قرار گرفتن موس */
+}
+
+.custom-form-control {
+    border: 1px solid #6f42c1;
+    /* رنگ بنفش */
+    border-radius: 0 8px 8px 0;
+    background-color: #f8f9fa;
+    /* رنگ پس‌زمینه روشن */
+    padding-left: 1.5rem;
+    /* فضای بیشتر برای متنی که به سمت راست تراز شده است */
+    width: 0;
+    transform: scaleX(0);
+    transform-origin: left;
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.custom-form-control.expand {
+    width: 90%;
+    transform: scaleX(1);
+    opacity: 1;
+}
+
+.custom-form-control::placeholder {
+    color: #6c757d;
+    /* رنگ متن placeholder */
+    opacity: 1;
+}
+
+.input-group .form-control:focus {
+    box-shadow: none;
+    border-color: #6f42c1;
+    /* رنگ مرز هنگام فوکوس */
+}

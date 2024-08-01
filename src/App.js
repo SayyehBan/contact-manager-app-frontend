@@ -1,9 +1,10 @@
 import './App.css';
+import Navbar from './components/Navbar';
 
 const App = () => {
   return (
     <div className="App">
-      <h3>اپلیکشن مدیریت مخاطبین</h3>
+      <Navbar />
     </div>
   );
 }
