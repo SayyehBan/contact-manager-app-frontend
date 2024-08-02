@@ -41,7 +41,7 @@
 }
 
 .custom-form-control.expand {
-    width: 90%;
+    width: 75%;
     transform: scaleX(1);
     opacity: 1;
 }
