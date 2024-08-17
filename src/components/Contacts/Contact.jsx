@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CURRENTLINE, CYAN, ORANGE, PURPLE, RED } from "../../helpers/colors";
-const Contact = () => {
+import { BASE_URL } from "../../Utilities/Constants/apiConfig";
+const Contact = ({ contact }) => {
   const [hoverEye, setHoverEye] = useState(false);
   const [hoverTrash, setHoverTrash] = useState(false);
   return (
@@ -10,12 +11,12 @@ const Contact = () => {
           <div className="row align-items-center d-flex justify-content-around">
             <div className="col-md-4 col-sm-4">
               <img
-                src="https://via.placeholder.com/200"
-                alt=""
+                src={BASE_URL + contact.photo}
+                alt={contact.firstName + " " + contact.lastName}
                 style={{
                   border: `1px solid ${PURPLE}`,
-                  width: `100%`,
-                  height: `100%`,
+                  width: `200px`,
+                  height: `200px`,
                 }}
                 className="img-fluid rounded"
               />
@@ -24,15 +25,17 @@ const Contact = () => {
               <ul className="list-group">
                 <li className="list-group-item list-group-item-dark">
                   نام و نام خانوادگی {""}
-                  <span className="fw-bold">مهسا امینی</span>
+                  <span className="fw-bold">
+                    {contact.firstName} {contact.lastName}
+                  </span>
                 </li>
                 <li className="list-group-item list-group-item-dark">
                   شماره موبایل
-                  <span className="fw-bold">0912457812</span>
+                  <span className="fw-bold">{contact.mobile}</span>
                 </li>
                 <li className="list-group-item list-group-item-dark">
                   آدرس ایمیل
-                  <span className="fw-bold">Freedom@gmail.com</span>
+                  <span className="fw-bold">{contact.email}</span>
                 </li>
               </ul>
             </div>
