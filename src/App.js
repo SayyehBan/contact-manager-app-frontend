@@ -2,24 +2,23 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import { AddContact, Contact, Contacts, EditContact, Navbar } from './components';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import axios from 'axios';
-import { BASE_URL } from './Utilities/Constants/apiConfig';
+import { getAllContacts, getAllGroups, getAllJobs } from './Utilities/Constants/contactService';
 
 const App = () => {
   const [getContacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(false)
   const [getGroups, setGetGroups] = useState([])
-  const [GetJobs, setGetJobs] = useState([])
+  const [getJobs, setGetJobs] = useState([])
   useEffect(() => {
 
     const fetchData = async () => {
       try {
         setLoading(true);
-        const { data: contactsData } = await axios.get(BASE_URL + 'api/Contacts/GetContact')
+        const { data: contactsData } = await getAllContacts();
         setContacts(contactsData)
-        const { data: groupsData } = await axios.get(BASE_URL + 'api/Groups/GetGroups')
+        const { data: groupsData } = await getAllGroups();
         setGetGroups(groupsData)
-        const { data: jobsData } = await axios.get(BASE_URL + 'api/Jobs/GetJobs')
+        const { data: jobsData } = await getAllJobs();
         setGetJobs(jobsData)
         setLoading(false)
       } catch (error) {

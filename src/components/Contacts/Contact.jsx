@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CURRENTLINE, CYAN, ORANGE, PURPLE, RED } from "../../helpers/colors";
-import { BASE_URL } from "../../Utilities/Constants/apiConfig";
+import { BASE_URL } from "../../Utilities/Constants/contactService";
 const Contact = ({ contact }) => {
   const [hoverEye, setHoverEye] = useState(false);
   const [hoverTrash, setHoverTrash] = useState(false);
