@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./SearchContact.css"; // فایل استایل سفارشی برای کامپوننت جستجو
+import InputSearch from "../components/InputSearch";
 
 // کامپوننت جستجوی مخاطب که امکان جستجو در لیست مخاطبین را فراهم می‌کند
 const SearchContact = () => {
@@ -21,16 +22,8 @@ const SearchContact = () => {
       >
         <i className="fas fa-search" />
       </span>
-
       {/* فیلد ورودی جستجو */}
-      <input
-        dir="rtl" // جهت راست به چپ برای متن فارسی
-        type="text"
-        className={`form-control custom-form-control ${isOpen ? "expand" : ""}`} // کلاس‌های پویا برای انیمیشن
-        placeholder="جستجو مخاطب"
-        aria-label="Search"
-        aria-describedby="basic-addon1"
-      />
+      <InputSearch isOpen={isOpen} text="جستجو مخاطب..." id="Search" />
     </div>
   );
 };
