@@ -28,10 +28,17 @@ export const getContact = async (id) => {
 }
 
 // ایجاد مخاطب جدید
-export const postContact = async (contact) => {
+export const postContact = async (contact, onUploadProgress) => {
     try {
         const url = `${BASE_URL}api/Contacts/InsertContact`;
-        const response = await axios.post(url, contact);
+        const response = await axios.post(url, contact, {
+            onUploadProgress: (progressEvent) => {
+                const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                if (onUploadProgress) {
+                    onUploadProgress(percentCompleted);
+                }
+            }
+        });
         return response;
     } catch (err) {
         console.log(err);
