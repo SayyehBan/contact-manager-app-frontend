@@ -1,4 +1,4 @@
-import { RED } from "../../helpers/colors";
+import { RED } from "../Utilities/helpers/colors";
 
 const BtnTrash = () => (
   <button

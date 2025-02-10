@@ -1,4 +1,4 @@
-import { CURRENTLINE, ORANGE } from "../../helpers/colors";
+import { CURRENTLINE, ORANGE } from "../Utilities/helpers/colors";
 
 const NotFound = () => {
   return (
@@ -7,7 +7,7 @@ const NotFound = () => {
         مخاطب یافت نشد
       </p>
       <img
-        src={require("../../assets/no-found.gif")}
+        src={require("../assets/no-found.gif")}
         alt="یافت نشد"
         className="w-25"
       />

@@ -1,4 +1,4 @@
-import { PURPLE } from "../../helpers/colors";
+import { PURPLE } from "../Utilities/helpers/colors";
 
 const ImgZoom = ({ image, alt }) => (
   <img

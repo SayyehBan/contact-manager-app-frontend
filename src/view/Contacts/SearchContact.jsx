@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./SearchContact.css"; // فایل استایل سفارشی برای کامپوننت جستجو
-import InputSearch from "../components/InputSearch";
+import InputSearch from "../../components/InputSearch";
 
 // کامپوننت جستجوی مخاطب که امکان جستجو در لیست مخاطبین را فراهم می‌کند
 const SearchContact = () => {

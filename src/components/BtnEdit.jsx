@@ -1,4 +1,4 @@
-import { CYAN } from "../../helpers/colors";
+import { CYAN } from "../Utilities/helpers/colors";
 
 const BtnEdit = () => (
   <button

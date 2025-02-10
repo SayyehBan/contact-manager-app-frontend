@@ -1,4 +1,4 @@
-import { ORANGE } from "../../helpers/colors";
+import { ORANGE } from "../Utilities/helpers/colors";
 
 const BtnEye = () => (
   <button

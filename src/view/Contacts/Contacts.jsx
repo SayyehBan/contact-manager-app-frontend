@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import { PINK } from "../../helpers/colors";
+import { PINK } from "../../Utilities/helpers/colors";
 import { BASE_URL } from "../../services/contactService";
-import Contact from "../components/Contact";
-import NotFound from "../components/NotFound";
-import Spinner from "../components/Spinner";
+import Contact from "../../components/Contact";
+import NotFound from "../../components/NotFound";
+import Spinner from "../../components/Spinner";
 
 const Contacts = ({ contacts, loading }) => {
   return (

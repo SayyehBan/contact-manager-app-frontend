@@ -1,4 +1,4 @@
-import { CURRENTLINE } from "../../helpers/colors";
+import { CURRENTLINE } from "../Utilities/helpers/colors";
 import BtnEdit from "./BtnEdit";
 import BtnEye from "./BtnEye";
 import BtnTrash from "./BtnTrash";
