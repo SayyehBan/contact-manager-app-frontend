@@ -1,9 +1,9 @@
 import { PURPLE } from "../../helpers/colors";
 
-const ImgZoom = ({ image }) => (
+const ImgZoom = ({ image, alt }) => (
   <img
     src={image}
-    alt=""
+    alt={alt}
     className="img-fluid rounded "
     style={{
       border: `1px solid ${PURPLE}`,

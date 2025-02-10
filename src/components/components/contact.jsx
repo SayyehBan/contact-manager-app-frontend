@@ -11,7 +11,7 @@ const Contact = ({ image, fullname, phone, email }) => (
         <div className="row align-items-center d-flex justify-content-around">
           <div className="col-md-4 d-flex justify-content-center">
             <div style={{ width: "150px", height: "150px" }}>
-              <ImgZoom image={image} />
+              <ImgZoom image={image} alt={fullname} />
             </div>
           </div>
           <div className="col-md-7">
