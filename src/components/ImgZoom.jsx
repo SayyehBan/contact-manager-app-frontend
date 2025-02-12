@@ -1,9 +1,9 @@
 import { PURPLE } from "../Utilities/helpers/colors";
 
-function ImgZoom({ key, src, alt, width, height }) {
+function ImgZoom({ id, src, alt, width, height }) {
   return (
     <img
-      key={key}
+      key={id}
       src={src}
       alt={alt}
       className="img-fluid rounded "

@@ -30,7 +30,7 @@ const App = () => {
         <Route path='/' element={<Navigate to="/contacts" />} />
         <Route path='/Contacts' element={<Contacts contacts={getContacts} loading={loading} />} />
         <Route path='/Contacts/add' element={<AddContact />} />
-        <Route path='/Contacts/:contactId' element={<ViewContact />} />
+        <Route path='/Contacts/:contactId' element={<ViewContact contact={getContacts} />} />
         <Route path='/Contacts/edit/:contactId' element={<EditContact />} />
       </Routes>
     </div>

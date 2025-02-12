@@ -4,33 +4,41 @@ import { useEffect, useState } from "react";
 import { BASE_URL, getContact } from "../../services/contactService";
 import Spinner from "../../components/Spinner";
 import ImgZoom from "../../components/ImgZoom";
+import NotFound from "../../components/NotFound";
 
-const ViewContact = () => {
+const ViewContact = ({ contact }) => {
   const { contactId } = useParams();
+  const numericContactId = parseInt(contactId);
 
+  const filteredContact = contact.find((c) => c.contactID === numericContactId);
   const [getDataContact, setGetDataContact] = useState({});
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const { data: contactData } = await getContact(contactId);
-        setGetDataContact(contactData);
-        console.log(contactData);
+
+        if (filteredContact) {
+          setGetDataContact(filteredContact);
+        } else {
+          const { data: contactData } = await getContact(numericContactId);
+          setGetDataContact(contactData);
+        }
         setLoading(false);
       } catch (error) {
         console.log(error);
+        setLoading(false);
       }
     };
     fetchData();
-  }, []);
+  }, [contact, contactId]);
   return (
     <>
       <section className="view-contact-intro p3">
         <div className="container">
           <div className="row my-2 text-center">
             <p className="h3 fw-bold" style={{ color: CYAN }}>
-              اطلاعات مخاطب
+              مشاهده اطلاعات مخاطب
             </p>
           </div>
         </div>
@@ -40,7 +48,7 @@ const ViewContact = () => {
         <Spinner />
       ) : (
         <>
-          {Object.keys(getDataContact).length > 0 && (
+          {Object.keys(getDataContact).length > 0 ? (
             <section className="view-contact mt-e">
               <div
                 className="container p-2"
@@ -49,7 +57,7 @@ const ViewContact = () => {
                 <div className="row align-items-center">
                   <div className="col-md-3">
                     <ImgZoom
-                      key={getDataContact.contactId}
+                      id={getDataContact.contactId}
                       src={BASE_URL + getDataContact.photo}
                       alt={
                         getDataContact.firstName + " " + getDataContact.lastName
@@ -67,21 +75,21 @@ const ViewContact = () => {
                         </span>
                       </li>
                       <li className="list-group-item list-group-item-dark">
-                        شماره تلفن :{" "}
+                        شماره موبایل :{" "}
                         <span className="fw-bold">{getDataContact.mobile}</span>
                       </li>
                       <li className="list-group-item list-group-item-dark">
-                        ایمیل :{" "}
+                        آدرس ایمیل :{" "}
                         <span className="fw-bold">{getDataContact.email}</span>
                       </li>
                       <li className="list-group-item list-group-item-dark">
-                        شغل :{" "}
+                        عنوان شغلی :{" "}
                         <span className="fw-bold">
                           {getDataContact.jobTitle}
                         </span>
                       </li>
                       <li className="list-group-item list-group-item-dark">
-                        گروه :{" "}
+                        دسته‌بندی :{" "}
                         <span className="fw-bold">
                           {getDataContact.groupTitle}
                         </span>
@@ -96,12 +104,14 @@ const ViewContact = () => {
                       className="btn"
                       style={{ backgroundColor: PURPLE }}
                     >
-                      برگشت به صفحه اصلی
+                      بازگشت به صفحه اصلی
                     </Link>
                   </div>
                 </div>
               </div>
             </section>
+          ) : (
+            <NotFound />
           )}
         </>
       )}

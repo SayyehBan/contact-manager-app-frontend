@@ -13,7 +13,7 @@ const Contact = ({ id, image, fullname, phone, email }) => {
             <div className="col-md-4 d-flex justify-content-center">
               <div style={{ width: "150px", height: "150px" }}>
                 <ImgZoom
-                  key={id}
+                  id={id}
                   src={image}
                   alt={fullname}
                   width="150px"

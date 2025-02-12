@@ -278,7 +278,7 @@ const AddContact = () => {
                           <div className="mt-2">
                             {image.map((file) => (
                               <ImgZoom
-                                key={file.name}
+                                id={file.name}
                                 src={file.preview}
                                 alt={file.name}
                                 width="100px"
