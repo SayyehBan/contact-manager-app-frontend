@@ -34,7 +34,7 @@ const Contacts = ({ contacts, loading }) => {
             {contacts.length > 0 ? (
               contacts.map((contact) => (
                 <Contact
-                  key={contact.contactID}
+                  id={contact.contactID}
                   fullname={contact.firstName + " " + contact.lastName}
                   phone={contact.mobile}
                   email={contact.email}

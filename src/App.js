@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
-import { AddContact, Contact, Contacts, EditContact, Navbar } from './components/Index';
+import { AddContact, Contacts, EditContact, Navbar, ViewContact } from './components/Index';
 import { useEffect, useState } from 'react';
 import { getAllContacts } from './services/contactService';
 const App = () => {
@@ -30,7 +30,7 @@ const App = () => {
         <Route path='/' element={<Navigate to="/contacts" />} />
         <Route path='/Contacts' element={<Contacts contacts={getContacts} loading={loading} />} />
         <Route path='/Contacts/add' element={<AddContact />} />
-        <Route path='/Contacts/:contactId' element={<Contact />} />
+        <Route path='/Contacts/:contactId' element={<ViewContact />} />
         <Route path='/Contacts/edit/:contactId' element={<EditContact />} />
       </Routes>
     </div>
