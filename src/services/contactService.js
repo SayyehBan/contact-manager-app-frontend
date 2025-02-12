@@ -39,7 +39,11 @@ export const postContact = async (contact, onUploadProgress) => {
                 }
             }
         });
+        if (response.data !== "تصویر انتخاب نشده") {
+            window.location.href = "/contacts";
+        }
         return response;
+
     } catch (err) {
         console.log(err);
         throw err;

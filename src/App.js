@@ -14,8 +14,6 @@ const App = () => {
         setLoading(true);
         const { data: contcatsData } = await getAllContacts();
         setContacts(contcatsData);
-
-
         setLoading(false);
 
       } catch (error) {

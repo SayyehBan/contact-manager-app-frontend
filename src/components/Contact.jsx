@@ -4,7 +4,7 @@ import BtnEye from "./BtnEye";
 import BtnTrash from "./BtnTrash";
 import ImgZoom from "./ImgZoom";
 
-const Contact = ({ image, fullname, phone, email }) => (
+const Contact = ({ key, image, fullname, phone, email }) => (
   <div className="col-md-6">
     <div style={{ backgroundColor: CURRENTLINE }} className="card my-2">
       <div className="card-body">
@@ -12,7 +12,7 @@ const Contact = ({ image, fullname, phone, email }) => (
           <div className="col-md-4 d-flex justify-content-center">
             <div style={{ width: "150px", height: "150px" }}>
               <ImgZoom
-                key={image}
+                key={key}
                 src={image}
                 alt={fullname}
                 width="150px"

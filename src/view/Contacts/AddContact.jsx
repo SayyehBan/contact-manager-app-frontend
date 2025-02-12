@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { GREEN } from "../../Utilities/helpers/colors";
+import { GREEN, PURPLE } from "../../Utilities/helpers/colors";
 import { Spinner } from "../../components/Index";
 import {
   getAllGroups,
@@ -8,6 +8,7 @@ import {
 } from "../../services/contactService";
 import { useDropzone } from "react-dropzone";
 import ImgZoom from "../../components/ImgZoom";
+import { Link } from "react-router-dom";
 
 const AddContact = () => {
   const [getGroups, setGetGroups] = useState([]);
@@ -67,7 +68,6 @@ const AddContact = () => {
     // Clean up previews
     return () => image.forEach((file) => URL.revokeObjectURL(file.preview));
   }, [image]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     let data = new FormData();
@@ -79,11 +79,14 @@ const AddContact = () => {
     data.append("GroupID", parseInt(group));
     data.append("File.File", image[0]);
 
-    await postContact(data, (progress) => {
-      console.log(progress);
-    });
+    try {
+      await postContact(data, (progress) => {
+        console.log(progress);
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
-
   return (
     <>
       {loading ? (
@@ -93,6 +96,7 @@ const AddContact = () => {
           <section className="p-3">
             <img
               src={require("../../assets/man-taking-note.png")}
+              alt=""
               height="400px"
               style={{
                 position: "absolute",
@@ -292,8 +296,17 @@ const AddContact = () => {
                             style={{ backgroundColor: GREEN }}
                             onClick={handleSubmit}
                           >
-                            ثبت مخاطب
+                            <i className="fas fa-plus-circle"></i> ثبت مخاطب
                           </button>
+
+                          <Link
+                            to="/contacts"
+                            className="btn mx-2"
+                            style={{ backgroundColor: PURPLE }}
+                          >
+                            <i className="fas fa-arrow-circle-left"></i> بازگشت
+                            به صفحه مخاطبین
+                          </Link>
                         </div>
                       </div>
                     </div>
