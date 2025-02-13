@@ -32,15 +32,7 @@ const Contacts = ({ contacts, loading }) => {
         <section className="container">
           <div className="row">
             {contacts.length > 0 ? (
-              contacts.map((contact) => (
-                <Contact
-                  id={contact.contactID}
-                  fullname={contact.firstName + " " + contact.lastName}
-                  phone={contact.mobile}
-                  email={contact.email}
-                  image={BASE_URL + contact.photo}
-                />
-              ))
+              contacts.map((contact) => <Contact contact={contact} />)
             ) : (
               <NotFound />
             )}

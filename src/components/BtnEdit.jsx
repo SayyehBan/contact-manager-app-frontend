@@ -1,7 +1,9 @@
+import { Link } from "react-router-dom";
 import { CYAN } from "../Utilities/helpers/colors";
 
-const BtnEdit = () => (
-  <button
+const BtnEdit = ({ id }) => (
+  <Link
+    to={`/Contacts/edit/${id}`}
     className="btn my-1"
     style={{ backgroundColor: CYAN }}
     onMouseEnter={(e) => {
@@ -14,7 +16,7 @@ const BtnEdit = () => (
     }}
   >
     <i className="fa fa-pen" />
-  </button>
+  </Link>
 );
 
 export default BtnEdit;

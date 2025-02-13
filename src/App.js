@@ -31,7 +31,7 @@ const App = () => {
         <Route path='/Contacts' element={<Contacts contacts={getContacts} loading={loading} />} />
         <Route path='/Contacts/add' element={<AddContact />} />
         <Route path='/Contacts/:contactId' element={<ViewContact contact={getContacts} />} />
-        <Route path='/Contacts/edit/:contactId' element={<EditContact />} />
+        <Route path='/Contacts/edit/:contactId' element={<EditContact contact={getContacts} />} />
       </Routes>
     </div>
   );

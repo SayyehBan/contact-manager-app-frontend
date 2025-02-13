@@ -51,10 +51,20 @@ export const postContact = async (contact, onUploadProgress) => {
 }
 
 // ویرایش مخاطب
-export const putContact = async (contact) => {
+export const putContact = async (contact, onUploadProgress) => {
     try {
         const url = `${BASE_URL}api/Contacts/UpdateContact`;
-        const response = await axios.put(url, contact);
+        const response = await axios.put(url, contact, {
+            onUploadProgress: (progressEvent) => {
+                const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                if (onUploadProgress) {
+                    onUploadProgress(percentCompleted);
+                }
+            }
+        });
+        if (response.data !== "تصویر انتخاب نشده") {
+            window.location.href = "/contacts";
+        }
         return response;
     } catch (err) {
         console.log(err);
