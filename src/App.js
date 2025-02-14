@@ -6,7 +6,6 @@ import { getAllContacts } from './services/contactService';
 const App = () => {
 
   const [getContacts, setContacts] = useState([]);
-
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
@@ -22,7 +21,6 @@ const App = () => {
     }
     fetchData();
   }, []);
-
   return (
     <div className="App">
       <Navbar />

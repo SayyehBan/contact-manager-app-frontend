@@ -51,9 +51,9 @@ export const postContact = async (contact, onUploadProgress) => {
 }
 
 // ویرایش مخاطب
-export const putContact = async (contact, onUploadProgress) => {
+export const putContact = async (contact, oldPhoto, onUploadProgress) => {
     try {
-        const url = `${BASE_URL}api/Contacts/UpdateContact`;
+        const url = `${BASE_URL}api/Contacts/UpdateContact?OldPhoto=${oldPhoto}`;
         const response = await axios.put(url, contact, {
             onUploadProgress: (progressEvent) => {
                 const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -73,17 +73,16 @@ export const putContact = async (contact, onUploadProgress) => {
 }
 
 // حذف مخاطب
-export const deleteContact = async (id) => {
+export const deleteContact = async (data) => {
     try {
-        const url = `${BASE_URL}api/Contacts/DeleteContact`;
-        const response = await axios.delete(url, id);
+        const url = `${BASE_URL}api/Contacts/DeleteContact?ContactID=${data.contactID}&OldPhoto=${data.photo}`;
+        const response = await axios.delete(url);
         return response;
     } catch (err) {
         console.log(err);
         throw err;
     }
 }
-
 // دریافت همه گروه‌ها
 export const getAllGroups = async () => {
     try {

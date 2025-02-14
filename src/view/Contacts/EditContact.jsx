@@ -26,10 +26,7 @@ const EditContact = ({ contact }) => {
   const [mobile, setMobile] = useState("");
   const [email, setEmail] = useState("");
   const [jobId, setJobId] = useState(0);
-  const [jobTitle, setJobTitle] = useState("");
   const [groupId, setGroupId] = useState(0);
-  const [groupTitle, setGroupTitle] = useState("");
-  const [photo, setPhoto] = useState("");
   const [image, setImage] = useState([]);
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -67,7 +64,6 @@ const EditContact = ({ contact }) => {
           setGetDataContact(filteredContact);
           setFirstName(filteredContact.firstName);
           setLastName(filteredContact.lastName);
-          setPhoto(BASE_URL + filteredContact.photo);
           setMobile(filteredContact.mobile);
           setEmail(filteredContact.email);
           setJobId(filteredContact.jobID);
@@ -77,7 +73,6 @@ const EditContact = ({ contact }) => {
           setGetDataContact(contactData);
           setFirstName(contactData.firstName);
           setLastName(contactData.lastName);
-          setPhoto(BASE_URL + contactData.photo);
           setMobile(contactData.mobile);
           setEmail(contactData.email);
           setJobId(contactData.jobID);
@@ -109,7 +104,7 @@ const EditContact = ({ contact }) => {
     data.append("File.File", image[0]);
 
     try {
-      await putContact(data, (progress) => {
+      await putContact(data, getDataContact.photo, (progress) => {
         console.log(progress);
       });
     } catch (error) {

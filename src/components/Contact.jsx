@@ -41,7 +41,7 @@ const Contact = ({ contact }) => {
             <div className="col-md-1 d-flex flex-column align-items-center">
               <BtnEye id={contact.contactID} />
               <BtnEdit id={contact.contactID} />
-              <BtnTrash />
+              <BtnTrash contact={contact} />
             </div>
           </div>
         </div>

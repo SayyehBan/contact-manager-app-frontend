@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { PINK } from "../../Utilities/helpers/colors";
-import { BASE_URL } from "../../services/contactService";
 import Contact from "../../components/Contact";
 import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
