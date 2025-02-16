@@ -2,11 +2,12 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
 import { AddContact, Contacts, EditContact, Navbar, ViewContact } from './components/Index';
 import { useEffect, useState } from 'react';
-import { getAllContacts } from './services/contactService';
+import { getAllContacts, getSearrchContacts } from './services/contactService';
 const App = () => {
 
   const [getContacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [fullName, setFullName] = useState({ text: "" });
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -21,9 +22,24 @@ const App = () => {
     }
     fetchData();
   }, []);
+  const handleSearch = async (e) => {
+    setFullName({ ...fullName, text: e.target.value });
+    try {
+      setLoading(true);
+      setContacts([])
+      const { data: contcatsData } = await getSearrchContacts(fullName.text);
+      setContacts(contcatsData);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+
+    }
+
+  }
   return (
     <div className="App">
-      <Navbar />
+      <Navbar query={fullName} handleSearch={handleSearch} />
       <Routes>
         <Route path='/' element={<Navigate to="/contacts" />} />
         <Route path='/Contacts' element={<Contacts contacts={getContacts} loading={loading} />} />

@@ -11,7 +11,7 @@ const Contacts = ({ contacts, loading }) => {
         <div className="grid">
           <div className="row">
             <div className="col">
-              <p className="h3">
+              <p className="h3 float-end">
                 <Link
                   to="/Contacts/add"
                   className="btn mx-2"
@@ -38,6 +38,86 @@ const Contacts = ({ contacts, loading }) => {
           </div>
         </section>
       )}
+      {/* <section className="container mt-4">
+        <div className="row">
+          <div className="col-12 mb-3">
+            <div
+              className="card shadow-sm transition-card"
+              style={{ cursor: "pointer" }}
+            >
+              <div className="card-body text-center text-primary">
+                <i className="fas fa-user fa-3x mb-3"></i>
+                <h5 className="card-title">کارت اول</h5>
+              </div>
+            </div>
+          </div>
+          <div className="col-12 mb-3">
+            <div
+              className="card shadow-sm transition-card"
+              style={{ cursor: "pointer" }}
+            >
+              <div className="card-body text-center text-success">
+                <i className="fas fa-phone fa-3x mb-3"></i>
+                <h5 className="card-title">کارت دوم</h5>
+              </div>
+            </div>
+          </div>
+          <div className="col-12 mb-3">
+            <div
+              className="card shadow-sm transition-card"
+              style={{ cursor: "pointer" }}
+            >
+              <div className="card-body text-center text-warning">
+                <i className="fas fa-envelope fa-3x mb-3"></i>
+                <h5 className="card-title">کارت سوم</h5>
+              </div>
+            </div>
+          </div>
+          <div className="col-12 mb-3">
+            <div
+              className="card shadow-sm transition-card"
+              style={{ cursor: "pointer" }}
+            >
+              <div className="card-body text-center text-danger">
+                <i className="fas fa-cog fa-3x mb-3"></i>
+                <h5 className="card-title">کارت چهارم</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+        <style>
+          {`
+            .transition-card {
+              transition: all 0.3s ease-in-out;
+            }
+            .transition-card:hover {
+              transform: translateY(-10px);
+            }
+            .transition-card:hover .card-body.text-primary {
+              background-color: var(--bs-primary);
+              color: white !important;
+            }
+            .transition-card:hover .card-body.text-success {
+              background-color: var(--bs-success);
+              color: white !important;
+            }
+            .transition-card:hover .card-body.text-warning {
+              background-color: var(--bs-warning);
+              color: black !important;
+            }
+            .transition-card:hover .card-body.text-danger {
+              background-color: var(--bs-danger);
+              color: white !important;
+            }
+            .transition-card:hover .card-title {
+              color: inherit;
+            }
+            .transition-card:hover i {
+              color: inherit;
+            }
+          `}
+        </style>
+      </section>{" "} */}
     </>
   );
 };

@@ -14,8 +14,18 @@ export const getAllContacts = async () => {
         throw err;
     }
 }
-
-// دریافت یک مخاطب با شناسه
+/// دریافت همه مخاطبین با شرط نام و نام خانوادگی   
+export const getSearrchContacts = async (FullName) => {
+    try {
+        const searchParam = !FullName || FullName.trim() === '' ? null : FullName;
+        const url = `${BASE_URL}api/Contacts/GetSearchContacts?FullName=${searchParam}`;
+        const response = await axios.get(url);
+        return response;
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
+}// دریافت یک مخاطب با شناسه
 export const getContact = async (id) => {
     try {
         const url = `${BASE_URL}api/Contacts/FindContactID?ContactID=${id}`;

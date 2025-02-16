@@ -1,10 +1,12 @@
-function InputSearch({ isOpen, text, id }) {
+function InputSearch({ isOpen, text, id, query, handleSearch }) {
   return (
     <input
       dir="rtl" // جهت راست به چپ برای متن فارسی
       type="text"
       className={`form-control custom-form-control ${isOpen ? "expand" : ""}`} // کلاس‌های پویا برای انیمیشن
       placeholder=""
+      value={query.text}
+      onChange={handleSearch}
       data-placeholder={text}
       aria-label={id}
       aria-describedby="basic-addon1"

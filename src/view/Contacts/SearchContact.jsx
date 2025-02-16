@@ -3,7 +3,7 @@ import "./SearchContact.css"; // فایل استایل سفارشی برای ک�
 import InputSearch from "../../components/InputSearch";
 
 // کامپوننت جستجوی مخاطب که امکان جستجو در لیست مخاطبین را فراهم می‌کند
-const SearchContact = () => {
+const SearchContact = ({ query, handleSearch }) => {
   // استفاده از هوک useState برای مدیریت وضعیت باز/بسته بودن فیلد جستجو
   const [isOpen, setIsOpen] = useState(false);
 
@@ -23,7 +23,13 @@ const SearchContact = () => {
         <i className="fas fa-search" />
       </span>
       {/* فیلد ورودی جستجو */}
-      <InputSearch isOpen={isOpen} text="جستجو مخاطب..." id="Search" />
+      <InputSearch
+        isOpen={isOpen}
+        text="جستجو مخاطب..."
+        id="Search"
+        query={query}
+        handleSearch={handleSearch}
+      />
     </div>
   );
 };
