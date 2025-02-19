@@ -1,51 +1,40 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 
 import { Link, useParams } from "react-router-dom";
 
 import { Spinner } from ".";
 import { CURRENTLINE, CYAN, PURPLE } from "../../Utilities/helpers/colors";
-import {
-  getAllGroups,
-  getAllJobs,
-  getContact,
-  SERVER_URL,
-} from "../../services/contactService";
+import { getContact, SERVER_URL } from "../../services/contactService";
 import ImgZoom from "../../components/ImgZoom";
+import { ContactContext } from "../../context/contactContext";
 
 const ViewContact = () => {
   const { contactId } = useParams();
-
+  const { loading, setLoading } = useContext(ContactContext);
   const [state, setState] = useState({
-    loading: false,
     contact: {},
-    group: {},
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setState({ ...state, loading: true });
+        setLoading(true);
         const { data: contactData } = await getContact(contactId);
-        const { data: groupData } = await getAllGroups(contactData.group);
-        const { data: jobData } = await getAllJobs(contactData.job);
-
         setState({
           ...state,
-          loading: false,
           contact: contactData,
-          group: groupData,
-          job: jobData,
         });
+        setLoading(false);
       } catch (err) {
         console.log(err.message);
-        setState({ ...state, loading: false });
+        setLoading(false);
       }
     };
 
     fetchData();
   }, []);
 
-  const { loading, contact } = state;
+  const { contact } = state;
 
   return (
     <>

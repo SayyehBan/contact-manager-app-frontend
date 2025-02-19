@@ -340,14 +340,6 @@ const EditContact = ({ forceRender, setForceRender }) => {
                 </div>
               </div>
             </div>
-
-            <div className="text-center mt-1">
-              <img
-                src={require("../../assets/man-taking-note.png")}
-                height="300px"
-                style={{ opacity: "60%" }}
-              />
-            </div>
           </section>
         </>
       )}
