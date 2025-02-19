@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
 
-import { CURRENTLINE } from "../../helpers/colors";
-import ImgZoom from "../ImgZoom";
+import { CURRENTLINE } from "../../Utilities/helpers/colors";
+import ImgZoom from "../../components/ImgZoom";
 import { SERVER_URL } from "../../services/contactService";
-import BtnEye from "../BtnEye";
-import BtnEdit from "../BtnEdit";
-import BtnTrash from "../BtnTrash";
+import BtnEye from "../../components/BtnEye";
+import BtnEdit from "../../components/BtnEdit";
+import BtnTrash from "../../components/BtnTrash";
 
 const Contact = ({ contact, confirmDelete }) => {
   return (

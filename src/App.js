@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import { deleteContact, getAllContacts, getAllGroups, getAllJobs, getSearrchContacts, postContact } from "./services/contactService";
-import { PURPLE } from "./helpers/colors";
+import { PURPLE } from "./Utilities/helpers/colors";
 import { ContactContext } from "./context/contactContext";
 import Navbar from "./components/Navbar";
-import { AddContact, Contacts, EditContact, ViewContact } from "./components";
+import { AddContact, Contacts, EditContact, ViewContact } from "./View/Contacts";
 
 
 const App = () => {

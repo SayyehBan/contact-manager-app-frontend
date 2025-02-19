@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 
 import Contact from "./Contact";
-import Spinner from "../Spinner";
-import { CURRENTLINE, ORANGE, PINK } from "../../helpers/colors";
-import NotFound from "../NotFound";
+import Spinner from "../../components/Spinner";
+import { PINK } from "../../Utilities/helpers/colors";
+import NotFound from "../../components/NotFound";
 
 const Contacts = ({ contacts, loading, confirmDelete }) => {
   return (

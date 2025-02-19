@@ -2,15 +2,15 @@ import { useState, useEffect } from "react";
 
 import { Link, useParams } from "react-router-dom";
 
-import { Spinner } from "../";
-import { CURRENTLINE, CYAN, PURPLE } from "../../helpers/colors";
+import { Spinner } from ".";
+import { CURRENTLINE, CYAN, PURPLE } from "../../Utilities/helpers/colors";
 import {
   getAllGroups,
   getAllJobs,
   getContact,
   SERVER_URL,
 } from "../../services/contactService";
-import ImgZoom from "../ImgZoom";
+import ImgZoom from "../../components/ImgZoom";
 
 const ViewContact = () => {
   const { contactId } = useParams();
@@ -45,7 +45,7 @@ const ViewContact = () => {
     fetchData();
   }, []);
 
-  const { loading, contact, group, job } = state;
+  const { loading, contact } = state;
 
   return (
     <>

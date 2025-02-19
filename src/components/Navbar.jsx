@@ -1,8 +1,8 @@
 import { useLocation } from "react-router-dom";
 
-import SearchContact from "./Contacts/SearchContact";
+import SearchContact from "../View/Contacts/SearchContact";
 
-import { BACKGROUND, PURPLE } from "../helpers/colors";
+import { BACKGROUND, PURPLE } from "../Utilities/helpers/colors";
 
 const Navbar = () => {
   const location = useLocation();

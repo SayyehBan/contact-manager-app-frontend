@@ -1,54 +1,26 @@
-import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import {
-  getAllGroups,
-  getAllJobs,
-  getContact,
-  putContact,
-  SERVER_URL,
-} from "../../services/contactService";
-import Spinner from "../Spinner";
-import { GREEN, ORANGE, PURPLE } from "../../helpers/colors";
-import ImgZoom from "../ImgZoom";
+import { GREEN, PURPLE } from "../../Utilities/helpers/colors";
+import { useEffect, useState } from "react";
+import ImgZoom from "../../components/ImgZoom";
+import Spinner from "../../components/Spinner";
 
-const EditContact = ({ forceRender, setForceRender }) => {
-  const { contactId } = useParams();
-  const navigate = useNavigate();
+const AddContact = ({
+  loading,
+  contact,
+  setContactInfo,
+  groups,
+  jobs,
+  createContactForm,
+}) => {
   const [image, setImage] = useState([]);
-  const [oldPhoto, setOldPhoto] = useState("");
-  const [state, setState] = useState({
-    loading: false,
-    contact: {
-      firstName: "",
-      lastName: "",
-      photo: "",
-      image: null,
-      mobile: "",
-      email: "",
-      job: "",
-      jobId: 0,
-      group: "",
-      groupId: 0,
-    },
-    groups: [],
-    jobs: [],
-  });
-
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       "image/*": [".png", ".jpg", ".jpeg", ".gif"],
     },
-    maxSize: 1024 * 1024,
+    maxSize: 1024 * 1024, // 1MB
     maxFiles: 1,
     onDrop: (acceptedFiles) => {
-      setState({
-        ...state,
-        contact: {
-          ...state.contact,
-          image: acceptedFiles[0],
-        },
-      });
       setImage(
         acceptedFiles.map((file) =>
           Object.assign(file, {
@@ -56,72 +28,19 @@ const EditContact = ({ forceRender, setForceRender }) => {
           })
         )
       );
+      setContactInfo({
+        target: {
+          name: "image",
+          value: acceptedFiles[0],
+        },
+      });
     },
   });
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setState({ ...state, loading: true });
-        const { data: contactData } = await getContact(contactId);
-        const { data: groupsData } = await getAllGroups();
-        const { data: jobsData } = await getAllJobs();
-        setState({
-          ...state,
-          loading: false,
-          contact: contactData,
-          groups: groupsData,
-          jobs: jobsData,
-        });
-        setOldPhoto(contactData.photo);
-      } catch (err) {
-        console.log(err);
-        setState({ ...state, loading: false });
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const setContactInfo = (event) => {
-    setState({
-      ...state,
-      contact: {
-        ...state.contact,
-        [event.target.name]: [event.target.value],
-      },
-    });
-  };
-
-  const submitForm = async (event) => {
-    event.preventDefault();
-    try {
-      setState({ ...state, loading: true });
-      let data = new FormData();
-      data.append("ContactID", contact.contactID);
-      data.append("FirstName", contact.firstName);
-      data.append("LastName", contact.lastName);
-      data.append("Mobile", contact.mobile);
-      data.append("Email", contact.email);
-      data.append("JobID", contact.job);
-      data.append("GroupID", contact.group);
-      data.append("File.File", contact.image);
-
-      const { res } = await putContact(data, oldPhoto, (progress) => {
-        console.log(progress);
-      });
-      setState({ ...state, loading: false });
-      if (res) {
-        setForceRender(!forceRender);
-        navigate("/contacts");
-      }
-    } catch (err) {
-      console.log(err);
-      setState({ ...state, loading: false });
-    }
-  };
-
-  const { loading, contact, groups, jobs } = state;
-
+    // Clean up previews
+    return () => image.forEach((file) => URL.revokeObjectURL(file.preview));
+  }, [image]);
   return (
     <>
       {loading ? (
@@ -129,21 +48,32 @@ const EditContact = ({ forceRender, setForceRender }) => {
       ) : (
         <>
           <section className="p-3">
+            <img
+              src={require("../../assets/man-taking-note.png")}
+              height="400px"
+              style={{
+                position: "absolute",
+                zIndex: "-1",
+                top: "130px",
+                left: "100px",
+                opacity: "50%",
+              }}
+            />
             <div className="container">
-              <div className="row my-2">
-                <div className="col text-center">
-                  <p className="h4 fw-bold" style={{ color: ORANGE }}>
-                    ویرایش مخاطب
+              <div className="row">
+                <div className="col">
+                  <p
+                    className="h4 fw-bold text-center"
+                    style={{ color: GREEN }}
+                  >
+                    ساخت مخاطب جدید
                   </p>
                 </div>
               </div>
-              <hr style={{ backgroundColor: ORANGE }} />
-              <div
-                className="row p-2 w-75 mx-auto align-items-center"
-                style={{ backgroundColor: "#44475a", borderRadius: "1em" }}
-              >
-                <div className="col-md-8">
-                  <form onSubmit={submitForm}>
+              <hr style={{ backgroundColor: GREEN }} />
+              <div className="row mt-5">
+                <div className="col-md-12">
+                  <form onSubmit={(e) => e.preventDefault()}>
                     <div className="mb-2">
                       <div className="row">
                         <div className="col-md-2">
@@ -151,7 +81,7 @@ const EditContact = ({ forceRender, setForceRender }) => {
                             htmlFor="firstName"
                             className="form-label text-end w-100"
                           >
-                            نام:
+                            نام :
                           </label>
                         </div>
                         <div className="col-md-4">
@@ -159,11 +89,11 @@ const EditContact = ({ forceRender, setForceRender }) => {
                             id="firstName"
                             type="text"
                             name="firstName"
+                            value={contact.firstName}
+                            onChange={setContactInfo}
                             className="form-control"
                             placeholder="نام"
                             required={true}
-                            value={contact.firstName}
-                            onChange={setContactInfo}
                           />
                         </div>
                         <div className="col-md-2">
@@ -171,7 +101,7 @@ const EditContact = ({ forceRender, setForceRender }) => {
                             htmlFor="lastName"
                             className="form-label text-end w-100"
                           >
-                            نام خانوادگی:
+                            نام خانوادگی :
                           </label>
                         </div>
                         <div className="col-md-4">
@@ -193,7 +123,7 @@ const EditContact = ({ forceRender, setForceRender }) => {
                             htmlFor="mobile"
                             className="form-label text-end w-100"
                           >
-                            شماره موبایل:
+                            شماره موبایل :
                           </label>
                         </div>
                         <div className="col-md-4">
@@ -213,7 +143,7 @@ const EditContact = ({ forceRender, setForceRender }) => {
                             htmlFor="email"
                             className="form-label text-end w-100"
                           >
-                            ایمیل:
+                            ایمیل :
                           </label>
                         </div>
                         <div className="col-md-4">
@@ -235,7 +165,7 @@ const EditContact = ({ forceRender, setForceRender }) => {
                             htmlFor="job"
                             className="form-label text-end w-100"
                           >
-                            شغل:
+                            شغل :
                           </label>
                         </div>
                         <div className="col-md-4">
@@ -243,16 +173,21 @@ const EditContact = ({ forceRender, setForceRender }) => {
                             name="job"
                             id="job"
                             className="form-control"
-                            defaultValue={contact.jobID}
+                            value={contact.jobID}
                             onChange={setContactInfo}
+                            required={true}
                           >
-                            {jobs.map((j) => (
-                              <option key={j.jobID} value={j.jobID}>
-                                {j.jobTitle}
+                            {jobs.map((job) => (
+                              <option
+                                key={job.jobID}
+                                value={parseInt(job.jobID)}
+                              >
+                                {job.jobTitle}
                               </option>
                             ))}
                           </select>
                         </div>
+
                         <div className="col-md-2">
                           <label
                             htmlFor="group"
@@ -266,17 +201,21 @@ const EditContact = ({ forceRender, setForceRender }) => {
                             name="group"
                             id="group"
                             className="form-control"
-                            defaultValue={contact.groupID}
+                            value={contact.groupID}
                             onChange={setContactInfo}
+                            required={true}
                           >
-                            {groups.map((g) => (
-                              <option key={g.groupID} value={g.groupID}>
-                                {g.groupTitle}
+                            {groups.map((group) => (
+                              <option
+                                key={group.groupID}
+                                value={parseInt(group.groupID)}
+                              >
+                                {group.groupTitle}
                               </option>
                             ))}
                           </select>
                         </div>
-                      </div>{" "}
+                      </div>
                       <div className="row mt-2">
                         <div className="col-md-2">
                           <label
@@ -292,26 +231,15 @@ const EditContact = ({ forceRender, setForceRender }) => {
                             <p>فایل تصویر را اینجا رها کنید یا کلیک کنید</p>
                           </div>
                           <div className="mt-2">
-                            {image.length > 0 ? (
-                              image.map((file) => (
-                                <ImgZoom
-                                  key={file.name}
-                                  id={file.name}
-                                  src={file.preview}
-                                  alt={file.name}
-                                  width="100px"
-                                  height="100px"
-                                />
-                              ))
-                            ) : (
+                            {image.map((file) => (
                               <ImgZoom
-                                id={contactId}
-                                src={SERVER_URL + contact.photo}
-                                alt={contactId}
+                                id={file.name}
+                                src={file.preview}
+                                alt={file.name}
                                 width="100px"
                                 height="100px"
                               />
-                            )}
+                            ))}
                           </div>
                         </div>
                       </div>
@@ -321,8 +249,9 @@ const EditContact = ({ forceRender, setForceRender }) => {
                             type="submit"
                             className="btn"
                             style={{ backgroundColor: GREEN }}
+                            onClick={createContactForm}
                           >
-                            <i className="fas fa-plus-circle"></i> ویرایش مخاطب
+                            <i className="fas fa-plus-circle"></i> ثبت مخاطب
                           </button>
 
                           <Link
@@ -340,14 +269,6 @@ const EditContact = ({ forceRender, setForceRender }) => {
                 </div>
               </div>
             </div>
-
-            <div className="text-center mt-1">
-              <img
-                src={require("../../assets/man-taking-note.png")}
-                height="300px"
-                style={{ opacity: "60%" }}
-              />
-            </div>
           </section>
         </>
       )}
@@ -355,4 +276,4 @@ const EditContact = ({ forceRender, setForceRender }) => {
   );
 };
 
-export default EditContact;
+export default AddContact;

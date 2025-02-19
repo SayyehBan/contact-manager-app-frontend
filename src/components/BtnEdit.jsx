@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { CYAN } from "../helpers/colors";
+import { CYAN } from "../Utilities/helpers/colors";
 
 const BtnEdit = ({ id }) => (
   <Link

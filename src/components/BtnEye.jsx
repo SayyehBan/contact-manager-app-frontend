@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ORANGE } from "../helpers/colors";
+import { ORANGE } from "../Utilities/helpers/colors";
 
 const BtnEye = ({ id }) => {
   return (
