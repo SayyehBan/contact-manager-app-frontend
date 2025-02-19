@@ -4,8 +4,11 @@ import Contact from "./Contact";
 import Spinner from "../../components/Spinner";
 import { PINK } from "../../Utilities/helpers/colors";
 import NotFound from "../../components/NotFound";
+import { useContext } from "react";
+import { ContactContext } from "../../context/contactContext";
 
-const Contacts = ({ contacts, loading, confirmDelete }) => {
+const Contacts = () => {
+  const { contacts, loading, deleteContact } = useContext(ContactContext);
   return (
     <>
       <section className="container">
@@ -35,8 +38,12 @@ const Contacts = ({ contacts, loading, confirmDelete }) => {
               contacts.map((c) => (
                 <Contact
                   key={c.contactID}
-                  confirmDelete={() =>
-                    confirmDelete(c.contactID, c.photo, c.fullname)
+                  deleteConcat={() =>
+                    deleteContact(
+                      c.contactID,
+                      c.photo,
+                      c.firstName + " " + c.lastName
+                    )
                   }
                   contact={c}
                 />

@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 import { CURRENTLINE } from "../../Utilities/helpers/colors";
 import ImgZoom from "../../components/ImgZoom";
 import { SERVER_URL } from "../../services/contactService";
@@ -7,7 +5,7 @@ import BtnEye from "../../components/BtnEye";
 import BtnEdit from "../../components/BtnEdit";
 import BtnTrash from "../../components/BtnTrash";
 
-const Contact = ({ contact, confirmDelete }) => {
+const Contact = ({ contact, deleteConcat }) => {
   return (
     <div className="col-md-6">
       <div style={{ backgroundColor: CURRENTLINE }} className="card my-2">
@@ -45,7 +43,7 @@ const Contact = ({ contact, confirmDelete }) => {
             <div className="col-md-1 col-sm-1 d-flex flex-column align-items-center">
               <BtnEye id={contact.contactID} />
               <BtnEdit id={contact.contactID} />
-              <BtnTrash confirmDelete={confirmDelete} />
+              <BtnTrash deleteConcat={deleteConcat} />
             </div>
           </div>
         </div>

@@ -1,18 +1,14 @@
 import { Link } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import { GREEN, PURPLE } from "../../Utilities/helpers/colors";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ImgZoom from "../../components/ImgZoom";
 import Spinner from "../../components/Spinner";
+import { ContactContext } from "../../context/contactContext";
 
-const AddContact = ({
-  loading,
-  contact,
-  setContactInfo,
-  groups,
-  jobs,
-  createContactForm,
-}) => {
+const AddContact = () => {
+  const { loading, contact, onContactChange, groups, jobs, createContact } =
+    useContext(ContactContext);
   const [image, setImage] = useState([]);
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
@@ -28,7 +24,7 @@ const AddContact = ({
           })
         )
       );
-      setContactInfo({
+      onContactChange({
         target: {
           name: "image",
           value: acceptedFiles[0],
@@ -71,6 +67,7 @@ const AddContact = ({
                 </div>
               </div>
               <hr style={{ backgroundColor: GREEN }} />
+
               <div className="row mt-5">
                 <div className="col-md-12">
                   <form onSubmit={(e) => e.preventDefault()}>
@@ -90,7 +87,7 @@ const AddContact = ({
                             type="text"
                             name="firstName"
                             value={contact.firstName}
-                            onChange={setContactInfo}
+                            onChange={onContactChange}
                             className="form-control"
                             placeholder="نام"
                             required={true}
@@ -113,7 +110,7 @@ const AddContact = ({
                             placeholder="نام خانوادگی"
                             required={true}
                             value={contact.lastName}
-                            onChange={setContactInfo}
+                            onChange={onContactChange}
                           />
                         </div>
                       </div>
@@ -135,7 +132,7 @@ const AddContact = ({
                             placeholder="شماره موبایل"
                             required={true}
                             value={contact.mobile}
-                            onChange={setContactInfo}
+                            onChange={onContactChange}
                           />
                         </div>
                         <div className="col-md-2">
@@ -155,7 +152,7 @@ const AddContact = ({
                             placeholder="ایمیل"
                             required={true}
                             value={contact.email}
-                            onChange={setContactInfo}
+                            onChange={onContactChange}
                           />
                         </div>
                       </div>
@@ -174,7 +171,7 @@ const AddContact = ({
                             id="job"
                             className="form-control"
                             value={contact.jobID}
-                            onChange={setContactInfo}
+                            onChange={onContactChange}
                             required={true}
                           >
                             {jobs.map((job) => (
@@ -202,7 +199,7 @@ const AddContact = ({
                             id="group"
                             className="form-control"
                             value={contact.groupID}
-                            onChange={setContactInfo}
+                            onChange={onContactChange}
                             required={true}
                           >
                             {groups.map((group) => (
@@ -249,7 +246,7 @@ const AddContact = ({
                             type="submit"
                             className="btn"
                             style={{ backgroundColor: GREEN }}
-                            onClick={createContactForm}
+                            onClick={createContact}
                           >
                             <i className="fas fa-plus-circle"></i> ثبت مخاطب
                           </button>

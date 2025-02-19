@@ -1,12 +1,12 @@
 import { RED } from "../Utilities/helpers/colors";
 
-const BtnTrash = ({ confirmDelete }) => {
+const BtnTrash = ({ deleteConcat }) => {
   return (
     <>
       {/* دکمه حذف با افکت تغییر آیکون در هاور */}
       <button
         className="btn my-1"
-        onClick={confirmDelete}
+        onClick={deleteConcat}
         style={{ backgroundColor: RED }}
         onMouseEnter={(e) => {
           e.currentTarget.querySelector("i").classList.remove("fa-trash");

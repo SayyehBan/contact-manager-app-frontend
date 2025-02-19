@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import { deleteContact, getAllContacts, getAllGroups, getAllJobs, getSearrchContacts, postContact } from "./services/contactService";
-import { PURPLE } from "./Utilities/helpers/colors";
+import { RED } from "./Utilities/helpers/colors";
 import { ContactContext } from "./context/contactContext";
 import Navbar from "./components/Navbar";
 import { AddContact, Contacts, EditContact, ViewContact } from "./View/Contacts";
@@ -173,7 +173,7 @@ const App = () => {
                       setShowDialog(false);
                     }}
                     className="btn mx-2"
-                    style={{ backgroundColor: PURPLE }}
+                    style={{ backgroundColor: RED }}
                   >
                     بله
                   </button>
@@ -186,27 +186,11 @@ const App = () => {
           <Route path="/" element={<Navigate to="/contacts" />} />
           <Route
             path="/contacts"
-            element={
-              <Contacts
-                contacts={filteredContacts}
-                loading={loading}
-                confirmDelete={confirmDelete}
-              />
-            }
+            element={<Contacts />}
           />
           <Route
             path="/contacts/add"
-            element={
-              <AddContact
-                key={1}
-                loading={loading}
-                setContactInfo={onContactChange}
-                contact={contact}
-                groups={groups}
-                jobs={jobs}
-                createContactForm={createContactForm}
-              />
-            }
+            element={<AddContact />}
           />
           <Route path="/contacts/:contactId" element={<ViewContact />} />
           <Route path="/contacts/edit/:contactId" element={<EditContact />} />
