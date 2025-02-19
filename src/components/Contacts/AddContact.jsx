@@ -1,30 +1,46 @@
+import { Link } from "react-router-dom";
+import { useDropzone } from "react-dropzone";
+import { GREEN, PURPLE } from "../../helpers/colors";
 import { useEffect, useState } from "react";
-import { GREEN } from "../../Utilities/helpers/colors";
-import { Spinner } from "../../components/Index";
-import { getAllGroups, getAllJobs } from "../../services/contactService";
+import ImgZoom from "../ImgZoom";
+import Spinner from "../Spinner";
 
-const AddContact = () => {
-  const [getGroups, setGetGroups] = useState([]);
-  const [getJobs, setGetJobs] = useState([]);
-  const [loading, setLoading] = useState(false);
+const AddContact = ({
+  loading,
+  contact,
+  setContactInfo,
+  groups,
+  jobs,
+  createContactForm,
+}) => {
+  const [image, setImage] = useState([]);
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: {
+      "image/*": [".png", ".jpg", ".jpeg", ".gif"],
+    },
+    maxSize: 1024 * 1024, // 1MB
+    maxFiles: 1,
+    onDrop: (acceptedFiles) => {
+      setImage(
+        acceptedFiles.map((file) =>
+          Object.assign(file, {
+            preview: URL.createObjectURL(file),
+          })
+        )
+      );
+      setContactInfo({
+        target: {
+          name: "image",
+          value: acceptedFiles[0],
+        },
+      });
+    },
+  });
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-
-        const { data: groupsData } = await getAllGroups();
-        setGetGroups(groupsData);
-
-        const { data: jobsData } = await getAllJobs();
-        setGetJobs(jobsData);
-
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+    // Clean up previews
+    return () => image.forEach((file) => URL.revokeObjectURL(file.preview));
+  }, [image]);
   return (
     <>
       {loading ? (
@@ -73,6 +89,8 @@ const AddContact = () => {
                             id="firstName"
                             type="text"
                             name="firstName"
+                            value={contact.firstName}
+                            onChange={setContactInfo}
                             className="form-control"
                             placeholder="نام"
                             required={true}
@@ -94,6 +112,8 @@ const AddContact = () => {
                             className="form-control"
                             placeholder="نام خانوادگی"
                             required={true}
+                            value={contact.lastName}
+                            onChange={setContactInfo}
                           />
                         </div>
                       </div>
@@ -114,6 +134,8 @@ const AddContact = () => {
                             className="form-control"
                             placeholder="شماره موبایل"
                             required={true}
+                            value={contact.mobile}
+                            onChange={setContactInfo}
                           />
                         </div>
                         <div className="col-md-2">
@@ -132,6 +154,8 @@ const AddContact = () => {
                             className="form-control"
                             placeholder="ایمیل"
                             required={true}
+                            value={contact.email}
+                            onChange={setContactInfo}
                           />
                         </div>
                       </div>
@@ -145,9 +169,19 @@ const AddContact = () => {
                           </label>
                         </div>
                         <div className="col-md-4">
-                          <select name="job" id="job" className="form-control">
-                            {getJobs.map((job) => (
-                              <option key={job.jobID} value={job.jobID}>
+                          <select
+                            name="job"
+                            id="job"
+                            className="form-control"
+                            value={contact.jobID}
+                            onChange={setContactInfo}
+                            required={true}
+                          >
+                            {jobs.map((job) => (
+                              <option
+                                key={job.jobID}
+                                value={parseInt(job.jobID)}
+                              >
                                 {job.jobTitle}
                               </option>
                             ))}
@@ -167,13 +201,67 @@ const AddContact = () => {
                             name="group"
                             id="group"
                             className="form-control"
+                            value={contact.groupID}
+                            onChange={setContactInfo}
+                            required={true}
                           >
-                            {getGroups.map((group) => (
-                              <option key={group.groupID} value={group.groupID}>
+                            {groups.map((group) => (
+                              <option
+                                key={group.groupID}
+                                value={parseInt(group.groupID)}
+                              >
                                 {group.groupTitle}
                               </option>
                             ))}
                           </select>
+                        </div>
+                      </div>
+                      <div className="row mt-2">
+                        <div className="col-md-2">
+                          <label
+                            htmlFor="photo"
+                            className="form-label text-end w-100"
+                          >
+                            تصویر
+                          </label>
+                        </div>
+                        <div className="col-md-10">
+                          <div {...getRootProps()} className="dropzone">
+                            <input {...getInputProps()} />
+                            <p>فایل تصویر را اینجا رها کنید یا کلیک کنید</p>
+                          </div>
+                          <div className="mt-2">
+                            {image.map((file) => (
+                              <ImgZoom
+                                id={file.name}
+                                src={file.preview}
+                                alt={file.name}
+                                width="100px"
+                                height="100px"
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row mt-2">
+                        <div className="col-md-12">
+                          <button
+                            type="submit"
+                            className="btn"
+                            style={{ backgroundColor: GREEN }}
+                            onClick={createContactForm}
+                          >
+                            <i className="fas fa-plus-circle"></i> ثبت مخاطب
+                          </button>
+
+                          <Link
+                            to="/contacts"
+                            className="btn mx-2"
+                            style={{ backgroundColor: PURPLE }}
+                          >
+                            <i className="fas fa-arrow-circle-left"></i> بازگشت
+                            به صفحه مخاطبین
+                          </Link>
                         </div>
                       </div>
                     </div>

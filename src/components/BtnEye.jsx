@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import { ORANGE } from "../Utilities/helpers/colors";
+import { ORANGE } from "../helpers/colors";
 
 const BtnEye = ({ id }) => {
   return (
     <Link
-      to={`/Contacts/${id}`}
+      to={`/contacts/${id}`}
       className="btn my-1"
       style={{ backgroundColor: ORANGE }}
       onMouseEnter={(e) => {

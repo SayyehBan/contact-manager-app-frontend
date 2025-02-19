@@ -1,4 +1,4 @@
-import { PURPLE } from "../Utilities/helpers/colors";
+import { PURPLE } from "../helpers/colors";
 
 function ImgZoom({ id, src, alt, width, height }) {
   return (

@@ -1,34 +1,113 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
-import './App.css';
-import { AddContact, Contacts, EditContact, Navbar, ViewContact } from './components/Index';
-import { useEffect, useState } from 'react';
-import { getAllContacts, getSearrchContacts } from './services/contactService';
-const App = () => {
+import { useEffect, useState } from "react";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { deleteContact, getAllContacts, getAllGroups, getAllJobs, getSearrchContacts, postContact } from "./services/contactService";
+import { PURPLE } from "./helpers/colors";
+import { ContactContext } from "./context/contactContext";
+import Navbar from "./components/Navbar";
+import { AddContact, Contacts, EditContact, ViewContact } from "./components";
 
-  const [getContacts, setContacts] = useState([]);
+
+const App = () => {
   const [loading, setLoading] = useState(false);
-  const [fullName, setFullName] = useState({ text: "" });
+  const [contacts, setContacts] = useState([]);
+  const [filteredContacts, setFilteredContacts] = useState([]);
+  const [groups, setGroups] = useState([]);
+  const [jobs, setJobs] = useState([]);
+  const [contact, setContact] = useState({});
+  const [contactQuery, setContactQuery] = useState({ text: "" });
+
+  const navigate = useNavigate();
+  const [showDialog, setShowDialog] = useState(false);
+  const [deleteInfo, setDeleteInfo] = useState({
+    contactId: null,
+    oldPhoto: null,
+    contactFullname: ""
+  });
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const { data: contcatsData } = await getAllContacts();
-        setContacts(contcatsData);
-        setLoading(false);
 
-      } catch (error) {
+        const { data: contactsData } = await getAllContacts();
+        const { data: groupsData } = await getAllGroups();
+        const { data: jobData } = await getAllJobs();
+
+        setContacts(contactsData);
+        setFilteredContacts(contactsData);
+        setGroups(groupsData);
+        setJobs(jobData);
+
+        setLoading(false);
+      } catch (err) {
+        console.log(err.message);
         setLoading(false);
       }
-    }
+    };
+
     fetchData();
   }, []);
-  const handleSearch = async (e) => {
-    setFullName({ ...fullName, text: e.target.value });
+
+  const onContactChange = (event) => {
+    setContact({
+      ...contact,
+      [event.target.name]: event.target.value,
+    });
+  };
+  const createContactForm = async (event) => {
+    event.preventDefault();
+
+    let data = new FormData();
+    console.log(contact);
+    data.append("FirstName", contact.firstName);
+    data.append("LastName", contact.lastName);
+    data.append("Mobile", contact.mobile);
+    data.append("Email", contact.email);
+    data.append("JobID", parseInt(contact.job));
+    data.append("GroupID", parseInt(contact.group));
+    data.append("File.File", contact.image);
+    try {
+      await postContact(data, (progress) => {
+        console.log(progress);
+      });
+      setContact({});
+      navigate("/contacts");
+
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+
+  const confirmDelete = (contactId, oldPhoto, contactFullname) => {
+    setDeleteInfo({ contactId, oldPhoto, contactFullname });
+    setShowDialog(true);
+  };
+
+  const removeContact = async (contactId, oldPhoto) => {
+    try {
+      setLoading(true);
+      const response = await deleteContact(contactId, oldPhoto);
+      if (response.data === 1) {
+        const { data: contactsData } = await getAllContacts();
+        setContacts(contactsData);
+        setFilteredContacts(contactsData);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.log(err.message);
+      setLoading(false);
+    }
+  };
+
+  const contactSearch = async (event) => {
+    setContactQuery({ ...contactQuery, text: event.target.value });
+
     try {
       setLoading(true);
       setContacts([])
-      const { data: contcatsData } = await getSearrchContacts(fullName.text);
-      setContacts(contcatsData);
+      const { data: contcatsData } = await getSearrchContacts(contactQuery.text);
+      setFilteredContacts(contcatsData);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -36,18 +115,104 @@ const App = () => {
 
     }
 
-  }
+  };
+
   return (
-    <div className="App">
-      <Navbar query={fullName} handleSearch={handleSearch} />
-      <Routes>
-        <Route path='/' element={<Navigate to="/contacts" />} />
-        <Route path='/Contacts' element={<Contacts contacts={getContacts} loading={loading} />} />
-        <Route path='/Contacts/add' element={<AddContact />} />
-        <Route path='/Contacts/:contactId' element={<ViewContact contact={getContacts} />} />
-        <Route path='/Contacts/edit/:contactId' element={<EditContact contact={getContacts} />} />
-      </Routes>
-    </div>
+    <ContactContext.Provider
+      value={{
+        loading,
+        setLoading,
+        contact,
+        setContact,
+        contactQuery,
+        contacts,
+        filteredContacts,
+        groups,
+        jobs,
+        onContactChange,
+        deleteContact: confirmDelete,
+        createContact: createContactForm,
+        contactSearch,
+      }}
+    >
+      <div className="App">
+        <Navbar />
+        {showDialog && (
+          <div
+            className="modal show d-block"
+            tabIndex="-1"
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+          >
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">تایید حذف</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setShowDialog(false)}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <p className="text-dark">
+                    آیا از حذف مخاطب{" "}
+                    {deleteInfo.contactFullname} اطمینان دارید؟
+                  </p>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setShowDialog(false)}
+                  >
+                    لغو
+                  </button>
+                  <button
+                    onClick={async () => {
+                      await removeContact(deleteInfo.contactId, deleteInfo.oldPhoto);
+                      setShowDialog(false);
+                    }}
+                    className="btn mx-2"
+                    style={{ backgroundColor: PURPLE }}
+                  >
+                    بله
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        <Routes>
+          <Route path="/" element={<Navigate to="/contacts" />} />
+          <Route
+            path="/contacts"
+            element={
+              <Contacts
+                contacts={filteredContacts}
+                loading={loading}
+                confirmDelete={confirmDelete}
+              />
+            }
+          />
+          <Route
+            path="/contacts/add"
+            element={
+              <AddContact
+                key={1}
+                loading={loading}
+                setContactInfo={onContactChange}
+                contact={contact}
+                groups={groups}
+                jobs={jobs}
+                createContactForm={createContactForm}
+              />
+            }
+          />
+          <Route path="/contacts/:contactId" element={<ViewContact />} />
+          <Route path="/contacts/edit/:contactId" element={<EditContact />} />
+        </Routes>
+      </div>
+    </ContactContext.Provider>
   );
 };
 

@@ -1,67 +1,82 @@
+import { useState, useEffect } from "react";
+
 import { Link, useParams } from "react-router-dom";
-import { CURRENTLINE, CYAN, PURPLE } from "../../Utilities/helpers/colors";
-import { useEffect, useState } from "react";
-import { BASE_URL, getContact } from "../../services/contactService";
-import Spinner from "../../components/Spinner";
-import ImgZoom from "../../components/ImgZoom";
-import NotFound from "../../components/NotFound";
 
-const ViewContact = ({ contact }) => {
+import { Spinner } from "../";
+import { CURRENTLINE, CYAN, PURPLE } from "../../helpers/colors";
+import {
+  getAllGroups,
+  getAllJobs,
+  getContact,
+  SERVER_URL,
+} from "../../services/contactService";
+import ImgZoom from "../ImgZoom";
+
+const ViewContact = () => {
   const { contactId } = useParams();
-  const numericContactId = parseInt(contactId);
 
-  const filteredContact = contact.find((c) => c.contactID === numericContactId);
-  const [getDataContact, setGetDataContact] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [state, setState] = useState({
+    loading: false,
+    contact: {},
+    group: {},
+  });
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
+        setState({ ...state, loading: true });
+        const { data: contactData } = await getContact(contactId);
+        const { data: groupData } = await getAllGroups(contactData.group);
+        const { data: jobData } = await getAllJobs(contactData.job);
 
-        if (filteredContact) {
-          setGetDataContact(filteredContact);
-        } else {
-          const { data: contactData } = await getContact(numericContactId);
-          setGetDataContact(contactData);
-        }
-        setLoading(false);
-      } catch (error) {
-        console.log(error);
-        setLoading(false);
+        setState({
+          ...state,
+          loading: false,
+          contact: contactData,
+          group: groupData,
+          job: jobData,
+        });
+      } catch (err) {
+        console.log(err.message);
+        setState({ ...state, loading: false });
       }
     };
+
     fetchData();
-  }, [contact, contactId]);
+  }, []);
+
+  const { loading, contact, group, job } = state;
+
   return (
     <>
       <section className="view-contact-intro p3">
         <div className="container">
           <div className="row my-2 text-center">
             <p className="h3 fw-bold" style={{ color: CYAN }}>
-              مشاهده اطلاعات مخاطب
+              اطلاعات مخاطب
             </p>
           </div>
         </div>
       </section>
+
       <hr style={{ backgroundColor: CYAN }} />
+
       {loading ? (
         <Spinner />
       ) : (
         <>
-          {Object.keys(getDataContact).length > 0 ? (
+          {Object.keys(contact).length > 0 && (
             <section className="view-contact mt-e">
               <div
                 className="container p-2"
-                style={{ backgroundColor: CURRENTLINE, borderRadius: "1em" }}
+                style={{ borderRadius: "1em", backgroundColor: CURRENTLINE }}
               >
                 <div className="row align-items-center">
                   <div className="col-md-3">
                     <ImgZoom
-                      id={getDataContact.contactId}
-                      src={BASE_URL + getDataContact.photo}
-                      alt={
-                        getDataContact.firstName + " " + getDataContact.lastName
-                      }
+                      id={contact.contactId}
+                      src={SERVER_URL + contact.photo}
+                      alt={contact.firstName + " " + contact.lastName}
                       width="150px"
                       height="150px"
                     />
@@ -71,28 +86,23 @@ const ViewContact = ({ contact }) => {
                       <li className="list-group-item list-group-item-dark">
                         نام و نام خانوادگی :{" "}
                         <span className="fw-bold">
-                          {getDataContact.firstName} {getDataContact.lastName}
+                          {contact.firstName + " " + contact.lastName}
                         </span>
                       </li>
                       <li className="list-group-item list-group-item-dark">
                         شماره موبایل :{" "}
-                        <span className="fw-bold">{getDataContact.mobile}</span>
+                        <span className="fw-bold">{contact.mobile}</span>
                       </li>
                       <li className="list-group-item list-group-item-dark">
-                        آدرس ایمیل :{" "}
-                        <span className="fw-bold">{getDataContact.email}</span>
+                        ایمیل : <span className="fw-bold">{contact.email}</span>
                       </li>
                       <li className="list-group-item list-group-item-dark">
-                        عنوان شغلی :{" "}
-                        <span className="fw-bold">
-                          {getDataContact.jobTitle}
-                        </span>
+                        شغل :{" "}
+                        <span className="fw-bold">{contact.jobTitle}</span>
                       </li>
                       <li className="list-group-item list-group-item-dark">
-                        دسته‌بندی :{" "}
-                        <span className="fw-bold">
-                          {getDataContact.groupTitle}
-                        </span>
+                        گروه :{" "}
+                        <span className="fw-bold">{contact.groupTitle}</span>
                       </li>
                     </ul>
                   </div>
@@ -104,14 +114,12 @@ const ViewContact = ({ contact }) => {
                       className="btn"
                       style={{ backgroundColor: PURPLE }}
                     >
-                      بازگشت به صفحه اصلی
+                      برگشت به صفحه اصلی
                     </Link>
                   </div>
                 </div>
               </div>
             </section>
-          ) : (
-            <NotFound />
           )}
         </>
       )}

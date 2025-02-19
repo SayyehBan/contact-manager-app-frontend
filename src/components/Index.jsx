@@ -1,12 +1,13 @@
-/*کامپوننت مخاطبین */
-export { default as AddContact } from "../view/Contacts/AddContact";
-export { default as EditContact } from "../view/Contacts/EditContact";
-export { default as ViewContact } from "../view/Contacts/ViewContact";
+//Better way of importing
 
-export { default as Contacts } from "../view/Contacts/Contacts";
-export { default as Contact } from "./Contact";
-export { default as SearchContact } from "../view/Contacts/SearchContact";
+/* Contact Components*/
+export { default as AddContact } from "./Contacts/AddContact";
+export { default as EditContact } from "./Contacts/EditContact";
+export { default as ViewContact } from "./Contacts/ViewContact";
+export { default as Contacts } from "./Contacts/Contacts";
+export { default as Contact } from "./Contacts/Contact";
+export { default as SearchContact } from "./Contacts/SearchContact";
 
-/*کامپوننت ها */
+/* -- Other Components -- */
 export { default as Navbar } from "./Navbar";
 export { default as Spinner } from "./Spinner";

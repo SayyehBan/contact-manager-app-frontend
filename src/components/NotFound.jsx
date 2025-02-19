@@ -1,4 +1,4 @@
-import { CURRENTLINE, ORANGE } from "../Utilities/helpers/colors";
+import { CURRENTLINE, ORANGE } from "../helpers/colors";
 
 const NotFound = () => {
   return (
