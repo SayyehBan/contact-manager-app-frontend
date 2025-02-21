@@ -72,7 +72,6 @@ export const putContact = async (contact, oldPhoto, onUploadProgress) => {
       }
     });
     if (response.data !== "تصویر انتخاب نشده") {
-      window.location.href = "/contacts";
     }
     return response;
   } catch (err) {

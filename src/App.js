@@ -58,7 +58,6 @@ const App = () => {
     event.preventDefault();
 
     let data = new FormData();
-    console.log(contact);
     data.append("FirstName", contact.firstName);
     data.append("LastName", contact.lastName);
     data.append("Mobile", contact.mobile);
@@ -67,6 +66,7 @@ const App = () => {
     data.append("GroupID", parseInt(contact.group));
     data.append("File.File", contact.image);
     try {
+      setLoading((pervLoading) => !pervLoading);
       await postContact(data, (progress) => {
         console.log(progress);
       });
@@ -107,6 +107,7 @@ const App = () => {
       setLoading(true);
       setContacts([])
       const { data: contcatsData } = await getSearrchContacts(contactQuery.text);
+      setContacts(contcatsData);
       setFilteredContacts(contcatsData);
       setLoading(false);
     } catch (error) {
@@ -123,10 +124,11 @@ const App = () => {
         loading,
         setLoading,
         contact,
-        setContact,
-        contactQuery,
         contacts,
+        setContacts,
+        setFilteredContacts,
         filteredContacts,
+        contactQuery,
         groups,
         jobs,
         onContactChange,
@@ -184,14 +186,8 @@ const App = () => {
         )}
         <Routes>
           <Route path="/" element={<Navigate to="/contacts" />} />
-          <Route
-            path="/contacts"
-            element={<Contacts />}
-          />
-          <Route
-            path="/contacts/add"
-            element={<AddContact />}
-          />
+          <Route path="/contacts" element={<Contacts />} />
+          <Route path="/contacts/add" element={<AddContact />} />
           <Route path="/contacts/:contactId" element={<ViewContact />} />
           <Route path="/contacts/edit/:contactId" element={<EditContact />} />
         </Routes>

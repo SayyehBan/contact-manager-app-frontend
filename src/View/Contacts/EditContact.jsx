@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
-  getAllGroups,
-  getAllJobs,
   getContact,
   putContact,
   SERVER_URL,
@@ -11,29 +9,15 @@ import {
 import Spinner from "../../components/Spinner";
 import { GREEN, ORANGE, PURPLE } from "../../Utilities/helpers/colors";
 import ImgZoom from "../../components/ImgZoom";
+import { ContactContext } from "../../context/contactContext";
 
-const EditContact = ({ forceRender, setForceRender }) => {
+const EditContact = () => {
   const { contactId } = useParams();
+  const { loading, setLoading, groups, jobs } = useContext(ContactContext);
   const navigate = useNavigate();
   const [image, setImage] = useState([]);
   const [oldPhoto, setOldPhoto] = useState("");
-  const [state, setState] = useState({
-    loading: false,
-    contact: {
-      firstName: "",
-      lastName: "",
-      photo: "",
-      image: null,
-      mobile: "",
-      email: "",
-      job: "",
-      jobId: 0,
-      group: "",
-      groupId: 0,
-    },
-    groups: [],
-    jobs: [],
-  });
+  const [contact, setContact] = useState({});
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
@@ -42,12 +26,10 @@ const EditContact = ({ forceRender, setForceRender }) => {
     maxSize: 1024 * 1024,
     maxFiles: 1,
     onDrop: (acceptedFiles) => {
-      setState({
-        ...state,
-        contact: {
-          ...state.contact,
-          image: acceptedFiles[0],
-        },
+      setContact({
+        ...contact,
+        photo: acceptedFiles[0].name,
+        image: acceptedFiles[0],
       });
       setImage(
         acceptedFiles.map((file) =>
@@ -61,66 +43,54 @@ const EditContact = ({ forceRender, setForceRender }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setState({ ...state, loading: true });
+        setLoading(true);
         const { data: contactData } = await getContact(contactId);
-        const { data: groupsData } = await getAllGroups();
-        const { data: jobsData } = await getAllJobs();
-        setState({
-          ...state,
-          loading: false,
-          contact: contactData,
-          groups: groupsData,
-          jobs: jobsData,
-        });
+        setContact(contactData);
         setOldPhoto(contactData.photo);
+        setLoading(false);
       } catch (err) {
         console.log(err);
-        setState({ ...state, loading: false });
+        setLoading(false);
       }
     };
 
     fetchData();
   }, []);
 
-  const setContactInfo = (event) => {
-    setState({
-      ...state,
-      contact: {
-        ...state.contact,
-        [event.target.name]: [event.target.value],
-      },
+  const onContactChange = (event) => {
+    setContact({
+      ...contact,
+      [event.target.name]: event.target.value,
     });
   };
 
   const submitForm = async (event) => {
     event.preventDefault();
     try {
-      setState({ ...state, loading: true });
+      setLoading(true);
       let data = new FormData();
       data.append("ContactID", contact.contactID);
       data.append("FirstName", contact.firstName);
       data.append("LastName", contact.lastName);
       data.append("Mobile", contact.mobile);
       data.append("Email", contact.email);
-      data.append("JobID", contact.job);
-      data.append("GroupID", contact.group);
+      data.append("JobID", contact.jobID);
+      data.append("GroupID", contact.groupID);
       data.append("File.File", contact.image);
 
-      const { res } = await putContact(data, oldPhoto, (progress) => {
-        console.log(progress);
-      });
-      setState({ ...state, loading: false });
-      if (res) {
-        setForceRender(!forceRender);
+      const { status } = await putContact(data, oldPhoto);
+      setLoading(false);
+      if (status === 200) {
         navigate("/contacts");
+        if (contact.image !== null) {
+          window.location.reload();
+        }
       }
     } catch (err) {
       console.log(err);
-      setState({ ...state, loading: false });
+      setLoading(false);
     }
   };
-
-  const { loading, contact, groups, jobs } = state;
 
   return (
     <>
@@ -163,7 +133,7 @@ const EditContact = ({ forceRender, setForceRender }) => {
                             placeholder="نام"
                             required={true}
                             value={contact.firstName}
-                            onChange={setContactInfo}
+                            onChange={onContactChange}
                           />
                         </div>
                         <div className="col-md-2">
@@ -183,7 +153,7 @@ const EditContact = ({ forceRender, setForceRender }) => {
                             placeholder="نام خانوادگی"
                             required={true}
                             value={contact.lastName}
-                            onChange={setContactInfo}
+                            onChange={onContactChange}
                           />
                         </div>
                       </div>
@@ -205,7 +175,7 @@ const EditContact = ({ forceRender, setForceRender }) => {
                             placeholder="شماره موبایل"
                             required={true}
                             value={contact.mobile}
-                            onChange={setContactInfo}
+                            onChange={onContactChange}
                           />
                         </div>
                         <div className="col-md-2">
@@ -225,7 +195,7 @@ const EditContact = ({ forceRender, setForceRender }) => {
                             placeholder="ایمیل"
                             required={true}
                             value={contact.email}
-                            onChange={setContactInfo}
+                            onChange={onContactChange}
                           />
                         </div>
                       </div>
@@ -240,11 +210,11 @@ const EditContact = ({ forceRender, setForceRender }) => {
                         </div>
                         <div className="col-md-4">
                           <select
-                            name="job"
+                            name="jobID"
                             id="job"
                             className="form-control"
-                            defaultValue={contact.jobID}
-                            onChange={setContactInfo}
+                            value={contact.jobID}
+                            onChange={onContactChange}
                           >
                             {jobs.map((j) => (
                               <option key={j.jobID} value={j.jobID}>
@@ -263,11 +233,11 @@ const EditContact = ({ forceRender, setForceRender }) => {
                         </div>
                         <div className="col-md-4">
                           <select
-                            name="group"
+                            name="groupID"
                             id="group"
                             className="form-control"
-                            defaultValue={contact.groupID}
-                            onChange={setContactInfo}
+                            value={contact.groupID}
+                            onChange={onContactChange}
                           >
                             {groups.map((g) => (
                               <option key={g.groupID} value={g.groupID}>
