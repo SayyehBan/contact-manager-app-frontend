@@ -5,18 +5,30 @@ import { useContext, useEffect, useState } from "react";
 import ImgZoom from "../../components/ImgZoom";
 import Spinner from "../../components/Spinner";
 import { ContactContext } from "../../context/contactContext";
+import BtnRemove from "../../components/BtnRemove";
 
+/**
+ * کامپوننت افزودن مخاطب جدید
+ * این کامپوننت فرم اضافه کردن مخاطب جدید را نمایش می دهد
+ * و شامل فیلدهای نام، نام خانوادگی، موبایل، ایمیل، شغل، گروه و تصویر می باشد
+ */
 const AddContact = () => {
+  // دریافت متغیرها و توابع مورد نیاز از کانتکست
   const { loading, contact, onContactChange, groups, jobs, createContact } =
     useContext(ContactContext);
+
+  // استیت نگهداری تصویر
   const [image, setImage] = useState([]);
+
+  // تنظیمات آپلود تصویر با استفاده از react-dropzone
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       "image/*": [".png", ".jpg", ".jpeg", ".gif"],
     },
-    maxSize: 1024 * 1024, // 1MB
-    maxFiles: 1,
+    maxSize: 1024 * 1024, // حداکثر سایز 1 مگابایت
+    maxFiles: 1, // حداکثر یک فایل
     onDrop: (acceptedFiles) => {
+      // ذخیره تصویر در استیت
       setImage(
         acceptedFiles.map((file) =>
           Object.assign(file, {
@@ -24,6 +36,7 @@ const AddContact = () => {
           })
         )
       );
+      // ارسال تصویر به کانتکست
       onContactChange({
         target: {
           name: "image",
@@ -33,10 +46,11 @@ const AddContact = () => {
     },
   });
 
+  // پاکسازی URL های موقت تصاویر هنگام آنمانت شدن کامپوننت
   useEffect(() => {
-    // Clean up previews
     return () => image.forEach((file) => URL.revokeObjectURL(file.preview));
   }, [image]);
+
   return (
     <>
       {loading ? (
@@ -44,6 +58,7 @@ const AddContact = () => {
       ) : (
         <>
           <section className="p-3">
+            {/* تصویر پس زمینه */}
             <img
               src={require("../../assets/man-taking-note.png")}
               height="400px"
@@ -72,6 +87,7 @@ const AddContact = () => {
                 <div className="col-md-12">
                   <form onSubmit={(e) => e.preventDefault()}>
                     <div className="mb-2">
+                      {/* بخش نام و نام خانوادگی */}
                       <div className="row">
                         <div className="col-md-2">
                           <label
@@ -114,6 +130,8 @@ const AddContact = () => {
                           />
                         </div>
                       </div>
+
+                      {/* بخش موبایل و ایمیل */}
                       <div className="row mt-2">
                         <div className="col-md-2">
                           <label
@@ -156,6 +174,8 @@ const AddContact = () => {
                           />
                         </div>
                       </div>
+
+                      {/* بخش شغل و گروه */}
                       <div className="row mt-2">
                         <div className="col-md-2">
                           <label
@@ -213,6 +233,8 @@ const AddContact = () => {
                           </select>
                         </div>
                       </div>
+
+                      {/* بخش آپلود تصویر */}
                       <div className="row mt-2">
                         <div className="col-md-2">
                           <label
@@ -240,6 +262,8 @@ const AddContact = () => {
                           </div>
                         </div>
                       </div>
+
+                      {/* دکمه های عملیات */}
                       <div className="row mt-2">
                         <div className="col-md-12">
                           <button
@@ -261,6 +285,7 @@ const AddContact = () => {
                           </Link>
                         </div>
                       </div>
+                      <BtnRemove />
                     </div>
                   </form>
                 </div>
