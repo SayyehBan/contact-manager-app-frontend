@@ -1,11 +1,22 @@
 import { useEffect, useState } from "react";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
-import { deleteContact, getAllContacts, getAllGroups, getAllJobs, getSearrchContacts, postContact } from "./services/contactService";
+import {
+  deleteContact,
+  getAllContacts,
+  getAllGroups,
+  getAllJobs,
+  getSearrchContacts,
+  postContact,
+} from "./services/contactService";
 import { RED } from "./Utilities/helpers/colors";
 import { ContactContext } from "./context/contactContext";
 import Navbar from "./components/Navbar";
-import { AddContact, Contacts, EditContact, ViewContact } from "./View/Contacts";
-
+import {
+  AddContact,
+  Contacts,
+  EditContact,
+  ViewContact,
+} from "./View/Contacts";
 
 const App = () => {
   const [loading, setLoading] = useState(false);
@@ -14,16 +25,14 @@ const App = () => {
   const [groups, setGroups] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [contact, setContact] = useState({});
-  const [contactQuery, setContactQuery] = useState({ text: "" });
 
   const navigate = useNavigate();
   const [showDialog, setShowDialog] = useState(false);
   const [deleteInfo, setDeleteInfo] = useState({
     contactId: null,
     oldPhoto: null,
-    contactFullname: ""
+    contactFullname: "",
   });
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -72,12 +81,10 @@ const App = () => {
       });
       setContact({});
       navigate("/contacts");
-
     } catch (err) {
       console.log(err.message);
     }
   };
-
 
   const confirmDelete = (contactId, oldPhoto, contactFullname) => {
     setDeleteInfo({ contactId, oldPhoto, contactFullname });
@@ -99,23 +106,22 @@ const App = () => {
       setLoading(false);
     }
   };
-
-  const contactSearch = async (event) => {
-    setContactQuery({ ...contactQuery, text: event.target.value });
-
-    try {
-      setLoading(true);
-      setContacts([])
-      const { data: contcatsData } = await getSearrchContacts(contactQuery.text);
-      setContacts(contcatsData);
-      setFilteredContacts(contcatsData);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      console.log(error);
-
-    }
-
+  let filterTimeOut;
+  const contactSearch = async (query) => {
+    clearTimeout(filterTimeOut);
+    filterTimeOut = setTimeout(async () => {
+      try {
+        setLoading(true);
+        setContacts([]);
+        const { data: contcatsData } = await getSearrchContacts(query);
+        setContacts(contcatsData);
+        setFilteredContacts(contcatsData);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        console.log(error);
+      }
+    }, 1000);
   };
 
   return (
@@ -128,7 +134,6 @@ const App = () => {
         setContacts,
         setFilteredContacts,
         filteredContacts,
-        contactQuery,
         groups,
         jobs,
         onContactChange,
@@ -157,8 +162,7 @@ const App = () => {
                 </div>
                 <div className="modal-body">
                   <p className="text-dark">
-                    آیا از حذف مخاطب{" "}
-                    {deleteInfo.contactFullname} اطمینان دارید؟
+                    آیا از حذف مخاطب {deleteInfo.contactFullname} اطمینان دارید؟
                   </p>
                 </div>
                 <div className="modal-footer">
@@ -171,7 +175,10 @@ const App = () => {
                   </button>
                   <button
                     onClick={async () => {
-                      await removeContact(deleteInfo.contactId, deleteInfo.oldPhoto);
+                      await removeContact(
+                        deleteInfo.contactId,
+                        deleteInfo.oldPhoto
+                      );
                       setShowDialog(false);
                     }}
                     className="btn mx-2"

@@ -8,7 +8,6 @@ export const ContactContext = createContext({
   setContacts: () => { },
   setFilteredContacts: () => { },
   filteredContacts: [],
-  contactQuery: {},
   groups: [],
   jobs: [],
   onContactChange: () => { },

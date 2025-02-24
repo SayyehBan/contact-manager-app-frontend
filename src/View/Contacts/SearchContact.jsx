@@ -2,8 +2,8 @@ import { useContext, useState } from "react";
 import "./SearchContact.css"; // فایل استایل سفارشی برای کامپوننت جستجو
 import { ContactContext } from "../../context/contactContext";
 // کامپوننت جستجوی مخاطب که امکان جستجو در لیست مخاطبین را فراهم می‌کند
-const SearchContact = ({ query, search }) => {
-  const { contactQuery, contactSearch } = useContext(ContactContext);
+const SearchContact = () => {
+  const { contactSearch } = useContext(ContactContext);
   // استفاده از هوک useState برای مدیریت وضعیت باز/بسته بودن فیلد جستجو
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -24,8 +24,7 @@ const SearchContact = ({ query, search }) => {
         type="text"
         className={`form-control custom-form-control ${isOpen ? "expand" : ""}`} // کلاس‌های پویا برای انیمیشن
         placeholder=""
-        value={contactQuery.text}
-        onChange={contactSearch}
+        onChange={(event) => contactSearch(event.target.value)}
         data-placeholder="جستجو مخطاب ..."
         aria-label="Search"
         aria-describedby="basic-addon1"

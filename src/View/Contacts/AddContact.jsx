@@ -5,7 +5,6 @@ import { useContext, useEffect, useState } from "react";
 import ImgZoom from "../../components/ImgZoom";
 import Spinner from "../../components/Spinner";
 import { ContactContext } from "../../context/contactContext";
-import BtnRemove from "../../components/BtnRemove";
 
 /**
  * کامپوننت افزودن مخاطب جدید
@@ -60,6 +59,7 @@ const AddContact = () => {
           <section className="p-3">
             {/* تصویر پس زمینه */}
             <img
+              alt=""
               src={require("../../assets/man-taking-note.png")}
               height="400px"
               style={{
@@ -285,7 +285,6 @@ const AddContact = () => {
                           </Link>
                         </div>
                       </div>
-                      <BtnRemove />
                     </div>
                   </form>
                 </div>

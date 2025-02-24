@@ -55,7 +55,7 @@ const EditContact = () => {
     };
 
     fetchData();
-  }, []);
+  }, [contactId, setLoading]);
 
   const onContactChange = (event) => {
     setContact({
@@ -83,7 +83,7 @@ const EditContact = () => {
       if (status === 200) {
         navigate("/contacts");
         if (contact.image !== null) {
-          window.location.reload();
+          // window.location.reload();
         }
       }
     } catch (err) {

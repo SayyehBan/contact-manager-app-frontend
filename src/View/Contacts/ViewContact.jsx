@@ -20,10 +20,10 @@ const ViewContact = () => {
       try {
         setLoading(true);
         const { data: contactData } = await getContact(contactId);
-        setState({
-          ...state,
+        setState((prevState) => ({
+          ...prevState,
           contact: contactData,
-        });
+        }));
         setLoading(false);
       } catch (err) {
         console.log(err.message);
@@ -32,7 +32,7 @@ const ViewContact = () => {
     };
 
     fetchData();
-  }, []);
+  }, [contactId, setLoading]);
 
   const { contact } = state;
 

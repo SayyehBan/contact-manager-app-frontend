@@ -15,7 +15,8 @@ export const getAllContacts = async () => {
 /// دریافت همه مخاطبین با شرط نام و نام خانوادگی   
 export const getSearrchContacts = async (FullName) => {
   try {
-    const searchParam = !FullName || FullName.trim() === '' ? null : FullName;
+    const searchParam = FullName.trim() === '' ? '' : FullName;
+    console.log(searchParam);
     const url = `${SERVER_URL}api/Contacts/GetSearchContacts?FullName=${searchParam}`;
     const response = await axios.get(url);
     return response;
