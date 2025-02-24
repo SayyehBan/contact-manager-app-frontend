@@ -17,6 +17,8 @@ import {
   EditContact,
   ViewContact,
 } from "./View/Contacts";
+import _ from 'lodash'
+import { contactInsertSchema } from "./validations/contcatValidation";
 
 const App = () => {
   const [loading, setLoading] = useState(false);
@@ -25,7 +27,7 @@ const App = () => {
   const [groups, setGroups] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [contact, setContact] = useState({});
-
+  const [errors, setErrors] = useState([]);
   const navigate = useNavigate();
   const [showDialog, setShowDialog] = useState(false);
   const [deleteInfo, setDeleteInfo] = useState({
@@ -66,6 +68,7 @@ const App = () => {
   const createContactForm = async (event) => {
     event.preventDefault();
 
+
     let data = new FormData();
     data.append("FirstName", contact.firstName);
     data.append("LastName", contact.lastName);
@@ -75,14 +78,20 @@ const App = () => {
     data.append("GroupID", parseInt(contact.group));
     data.append("File.File", contact.image);
     try {
-      setLoading((pervLoading) => !pervLoading);
+      await contactInsertSchema.validate(contact, { abortEarly: false });
+      setLoading(true);
       await postContact(data, (progress) => {
         console.log(progress);
       });
       setContact({});
+      setErrors([]);
       navigate("/contacts");
+      setLoading(false);
     } catch (err) {
       console.log(err.message);
+      console.log(err.inner);
+      setErrors(err.inner);
+      setLoading(false);
     }
   };
 
@@ -106,24 +115,20 @@ const App = () => {
       setLoading(false);
     }
   };
-  let filterTimeOut;
-  const contactSearch = async (query) => {
-    clearTimeout(filterTimeOut);
-    filterTimeOut = setTimeout(async () => {
-      try {
-        setLoading(true);
-        setContacts([]);
-        const { data: contcatsData } = await getSearrchContacts(query);
-        setContacts(contcatsData);
-        setFilteredContacts(contcatsData);
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-        console.log(error);
-      }
-    }, 1000);
-  };
-
+  // let filterTimeOut;
+  const contactSearch = _.debounce(async (query) => {
+    try {
+      setLoading(true);
+      setContacts([]);
+      const { data: contcatsData } = await getSearrchContacts(query);
+      setContacts(contcatsData);
+      setFilteredContacts(contcatsData);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
+  }, 1000);
   return (
     <ContactContext.Provider
       value={{
@@ -136,6 +141,7 @@ const App = () => {
         filteredContacts,
         groups,
         jobs,
+        errors,
         onContactChange,
         deleteContact: confirmDelete,
         createContact: createContactForm,

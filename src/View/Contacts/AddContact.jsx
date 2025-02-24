@@ -13,8 +13,15 @@ import { ContactContext } from "../../context/contactContext";
  */
 const AddContact = () => {
   // دریافت متغیرها و توابع مورد نیاز از کانتکست
-  const { loading, contact, onContactChange, groups, jobs, createContact } =
-    useContext(ContactContext);
+  const {
+    loading,
+    contact,
+    onContactChange,
+    groups,
+    jobs,
+    createContact,
+    errors,
+  } = useContext(ContactContext);
 
   // استیت نگهداری تصویر
   const [image, setImage] = useState([]);
@@ -106,8 +113,15 @@ const AddContact = () => {
                             onChange={onContactChange}
                             className="form-control"
                             placeholder="نام"
-                            required={true}
                           />
+                          {errors?.find((err) => err.path === "firstName") && (
+                            <small className="text-danger">
+                              {
+                                errors.find((err) => err.path === "firstName")
+                                  .message
+                              }
+                            </small>
+                          )}
                         </div>
                         <div className="col-md-2">
                           <label
@@ -124,10 +138,17 @@ const AddContact = () => {
                             name="lastName"
                             className="form-control"
                             placeholder="نام خانوادگی"
-                            required={true}
                             value={contact.lastName}
                             onChange={onContactChange}
                           />
+                          {errors?.find((err) => err.path === "lastName") && (
+                            <small className="text-danger">
+                              {
+                                errors.find((err) => err.path === "lastName")
+                                  .message
+                              }
+                            </small>
+                          )}
                         </div>
                       </div>
 
@@ -148,10 +169,17 @@ const AddContact = () => {
                             name="mobile"
                             className="form-control"
                             placeholder="شماره موبایل"
-                            required={true}
                             value={contact.mobile}
                             onChange={onContactChange}
                           />
+                          {errors?.find((err) => err.path === "mobile") && (
+                            <small className="text-danger">
+                              {
+                                errors.find((err) => err.path === "mobile")
+                                  .message
+                              }
+                            </small>
+                          )}
                         </div>
                         <div className="col-md-2">
                           <label
@@ -168,10 +196,17 @@ const AddContact = () => {
                             name="email"
                             className="form-control"
                             placeholder="ایمیل"
-                            required={true}
                             value={contact.email}
                             onChange={onContactChange}
                           />
+                          {errors?.find((err) => err.path === "email") && (
+                            <small className="text-danger">
+                              {
+                                errors.find((err) => err.path === "email")
+                                  .message
+                              }
+                            </small>
+                          )}
                         </div>
                       </div>
 
@@ -192,7 +227,6 @@ const AddContact = () => {
                             className="form-control"
                             value={contact.jobID}
                             onChange={onContactChange}
-                            required={true}
                           >
                             {jobs.map((job) => (
                               <option
@@ -203,6 +237,11 @@ const AddContact = () => {
                               </option>
                             ))}
                           </select>
+                          {errors?.find((err) => err.path === "job") && (
+                            <small className="text-danger">
+                              {errors.find((err) => err.path === "job").message}
+                            </small>
+                          )}
                         </div>
 
                         <div className="col-md-2">
@@ -220,7 +259,6 @@ const AddContact = () => {
                             className="form-control"
                             value={contact.groupID}
                             onChange={onContactChange}
-                            required={true}
                           >
                             {groups.map((group) => (
                               <option
@@ -231,6 +269,14 @@ const AddContact = () => {
                               </option>
                             ))}
                           </select>
+                          {errors?.find((err) => err.path === "group") && (
+                            <small className="text-danger">
+                              {
+                                errors.find((err) => err.path === "group")
+                                  .message
+                              }
+                            </small>
+                          )}
                         </div>
                       </div>
 
@@ -260,6 +306,14 @@ const AddContact = () => {
                               />
                             ))}
                           </div>
+                          {errors?.find((err) => err.path === "image") && (
+                            <small className="text-danger">
+                              {
+                                errors.find((err) => err.path === "image")
+                                  .message
+                              }
+                            </small>
+                          )}
                         </div>
                       </div>
 
@@ -286,7 +340,7 @@ const AddContact = () => {
                         </div>
                       </div>
                     </div>
-                  </form>
+                  </form>{" "}
                 </div>
               </div>
             </div>

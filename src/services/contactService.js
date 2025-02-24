@@ -50,7 +50,7 @@ export const postContact = async (contact, onUploadProgress) => {
       }
     });
     if (response.data !== "تصویر انتخاب نشده") {
-      window.location.href = "/contacts";
+      // window.location.href = "/contacts";
     }
     return response;
 
