@@ -3,7 +3,7 @@
  * @description کامپوننت ویرایش مخاطب که امکان ویرایش اطلاعات و تصویر مخاطب را فراهم می کند
  * @returns {JSX.Element} فرم ویرایش مخاطب
  */
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
@@ -17,6 +17,7 @@ import ImgZoom from "../../components/ImgZoom";
 import { ContactContext } from "../../context/contactContext";
 import { contactUpdateSchema } from "../../validations/contcatValidation";
 import { ErrorMessage, Field, Form, Formik } from "formik";
+import { useImmer } from "use-immer";
 
 /**
  * @function EditContact
@@ -24,12 +25,19 @@ import { ErrorMessage, Field, Form, Formik } from "formik";
  */
 const EditContact = () => {
   const { contactId } = useParams();
-  const { loading, setLoading, groups, jobs } = useContext(ContactContext);
+  const {
+    setContacts,
+    setFilteredContacts,
+    loading,
+    setLoading,
+    groups,
+    jobs,
+  } = useContext(ContactContext);
   const navigate = useNavigate();
-  const [image, setImage] = useState([]); // آرایه تصاویر آپلود شده
-  const [oldPhoto, setOldPhoto] = useState(""); // تصویر قبلی مخاطب
-  const [contact, setContact] = useState({}); // اطلاعات مخاطب
-  const [initialValues, setInitialValues] = useState({
+  const [image, setImage] = useImmer([]); // آرایه تصاویر آپلود شده
+  const [oldPhoto, setOldPhoto] = useImmer(""); // تصویر قبلی مخاطب
+  const [contact, setContact] = useImmer({}); // اطلاعات مخاطب
+  const [initialValues, setInitialValues] = useImmer({
     firstName: "",
     lastName: "",
     email: "",
@@ -59,8 +67,16 @@ const EditContact = () => {
         data.append("File.File", contact.image);
       }
 
-      const { status } = await putContact(data, oldPhoto);
-      if (status === 200) {
+      const res = await putContact(data, oldPhoto);
+      if (res.status === 200) {
+        const updateContact = (draft) => {
+          const contactIndex = draft.findIndex(
+            (c) => c.contactID === parseInt(contactId)
+          );
+          draft[contactIndex] = { ...res.data };
+        };
+        setContacts(updateContact);
+        setFilteredContacts(updateContact);
         navigate("/contacts");
       }
     } catch (err) {
@@ -199,7 +215,7 @@ const EditContact = () => {
                               className="form-control"
                               placeholder="نام خانوادگی"
                             />
-                            <errorMessage
+                            <ErrorMessage
                               name="lastName"
                               component="div"
                               className="text-danger"
@@ -223,7 +239,7 @@ const EditContact = () => {
                               className="form-control"
                               placeholder="شماره موبایل"
                             />
-                            <errorMessage
+                            <ErrorMessage
                               name="mobile"
                               component="div"
                               className="text-danger"
@@ -245,7 +261,7 @@ const EditContact = () => {
                               className="form-control"
                               placeholder="ایمیل"
                             />
-                            <errorMessage
+                            <ErrorMessage
                               name="email"
                               component="div"
                               className="text-danger"
@@ -274,7 +290,7 @@ const EditContact = () => {
                                 </option>
                               ))}
                             </Field>
-                            <errorMessage
+                            <ErrorMessage
                               name="job"
                               component="div"
                               className="text-danger"
@@ -301,7 +317,7 @@ const EditContact = () => {
                                 </option>
                               ))}
                             </Field>
-                            <errorMessage
+                            <ErrorMessage
                               name="group"
                               component="div"
                               className="text-danger"

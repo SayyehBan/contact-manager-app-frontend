@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import {
   deleteContact,
@@ -18,19 +18,16 @@ import {
   ViewContact,
 } from "./View/Contacts";
 import _ from 'lodash'
-import { contactInsertSchema } from "./validations/contcatValidation";
-
+import { useImmer } from "use-immer";
 const App = () => {
-  const [loading, setLoading] = useState(false);
-  const [contacts, setContacts] = useState([]);
-  const [filteredContacts, setFilteredContacts] = useState([]);
-  const [groups, setGroups] = useState([]);
-  const [jobs, setJobs] = useState([]);
-  const [contact, setContact] = useState({});
-  const [errors, setErrors] = useState([]);
+  const [loading, setLoading] = useImmer(false);
+  const [contacts, setContacts] = useImmer([]);
+  const [filteredContacts, setFilteredContacts] = useImmer([]);
+  const [groups, setGroups] = useImmer([]);
+  const [jobs, setJobs] = useImmer([]);
   const navigate = useNavigate();
-  const [showDialog, setShowDialog] = useState(false);
-  const [deleteInfo, setDeleteInfo] = useState({
+  const [showDialog, setShowDialog] = useImmer(false);
+  const [deleteInfo, setDeleteInfo] = useImmer({
     contactId: null,
     oldPhoto: null,
     contactFullname: "",
@@ -59,12 +56,7 @@ const App = () => {
     fetchData();
   }, []);
 
-  const onContactChange = (event) => {
-    setContact({
-      ...contact,
-      [event.target.name]: event.target.value,
-    });
-  };
+
   const createContactForm = async (contact) => {
     let data = new FormData();
     data.append("FirstName", contact.firstName);
@@ -76,10 +68,19 @@ const App = () => {
     data.append("File.File", contact.image);
     try {
       setLoading(true);
-      await postContact(data, (progress) => {
+      const response = await postContact(data, (progress) => {
         console.log(progress);
       });
+      if (response.status === 200) {
+        setContacts((draft) => {
+          draft.push(response.data);
+        });
+        setFilteredContacts((draft) => {
+          draft.push(response.data);
+        });
+      }
       navigate("/contacts");
+
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -90,23 +91,26 @@ const App = () => {
     setDeleteInfo({ contactId, oldPhoto, contactFullname });
     setShowDialog(true);
   };
-
   const removeContact = async (contactId, oldPhoto) => {
     try {
       setLoading(true);
       const response = await deleteContact(contactId, oldPhoto);
-      if (response.data === 1) {
-        const { data: contactsData } = await getAllContacts();
-        setContacts(contactsData);
-        setFilteredContacts(contactsData);
+      if (response.status === 200) {
+        setContacts((draft) => {
+          const updatedContacts = draft.filter((c) => c.contactID !== contactId);
+          return updatedContacts;
+        });
+        setFilteredContacts((draft) => {
+          const updatedFiltered = draft.filter((c) => c.contactID !== contactId);
+          return updatedFiltered;
+        });
         setLoading(false);
       }
     } catch (err) {
       console.log(err.message);
       setLoading(false);
     }
-  };
-  // let filterTimeOut;
+  };  // let filterTimeOut;
   const contactSearch = _.debounce(async (query) => {
     try {
       setLoading(true);
@@ -125,14 +129,12 @@ const App = () => {
       value={{
         loading,
         setLoading,
-        contact,
         contacts,
         setContacts,
         setFilteredContacts,
         filteredContacts,
         groups,
         jobs,
-        onContactChange,
         deleteContact: confirmDelete,
         createContact: createContactForm,
         contactSearch,
