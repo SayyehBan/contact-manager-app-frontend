@@ -11,7 +11,7 @@ import { GREEN, ORANGE, PURPLE } from "../../Utilities/helpers/colors";
 import ImgZoom from "../../components/ImgZoom";
 import { ContactContext } from "../../context/contactContext";
 import { contactUpdateSchema } from "../../validations/contcatValidation";
-import { useFormik } from "formik";
+import { ErrorMessage, Field, Form, Formik } from "formik";
 
 const EditContact = () => {
   const { contactId } = useParams();
@@ -20,45 +20,41 @@ const EditContact = () => {
   const [image, setImage] = useState([]);
   const [oldPhoto, setOldPhoto] = useState("");
   const [contact, setContact] = useState({});
-
-  const formik = useFormik({
-    initialValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      mobile: "",
-      job: "",
-      group: "",
-    },
-    validationSchema: contactUpdateSchema,
-    onSubmit: async (values) => {
-      try {
-        setLoading(true);
-
-        let data = new FormData();
-        data.append("ContactID", contact.contactID);
-        data.append("FirstName", values.firstName);
-        data.append("LastName", values.lastName);
-        data.append("Mobile", values.mobile);
-        data.append("Email", values.email);
-        data.append("JobID", values.job);
-        data.append("GroupID", values.group);
-        if (contact.image) {
-          data.append("File.File", contact.image);
-        }
-
-        const { status } = await putContact(data, oldPhoto);
-        if (status === 200) {
-          navigate("/contacts");
-        }
-      } catch (err) {
-        console.log("Error submitting form:", err);
-      } finally {
-        setLoading(false);
-      }
-    },
-    enableReinitialize: true,
+  const [initialValues, setInitialValues] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    mobile: "",
+    job: "",
+    group: "",
   });
+
+  const handleSubmit = async (values) => {
+    try {
+      setLoading(true);
+
+      let data = new FormData();
+      data.append("ContactID", contact.contactID);
+      data.append("FirstName", values.firstName);
+      data.append("LastName", values.lastName);
+      data.append("Mobile", values.mobile);
+      data.append("Email", values.email);
+      data.append("JobID", values.job);
+      data.append("GroupID", values.group);
+      if (contact.image) {
+        data.append("File.File", contact.image);
+      }
+
+      const { status } = await putContact(data, oldPhoto);
+      if (status === 200) {
+        navigate("/contacts");
+      }
+    } catch (err) {
+      console.log("Error submitting form:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
@@ -89,7 +85,7 @@ const EditContact = () => {
         const { data: contactData } = await getContact(contactId);
         setContact(contactData);
         setOldPhoto(contactData.photo);
-        formik.setValues({
+        setInitialValues({
           firstName: contactData.firstName,
           lastName: contactData.lastName,
           email: contactData.email,
@@ -107,10 +103,8 @@ const EditContact = () => {
     fetchData();
 
     return () => {
-      // Cleanup previews to avoid memory leaks
       image.forEach((file) => URL.revokeObjectURL(file.preview));
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contactId]);
 
   return (
@@ -134,241 +128,229 @@ const EditContact = () => {
                 style={{ backgroundColor: "#44475a", borderRadius: "1em" }}
               >
                 <div className="col-md-8">
-                  <form onSubmit={formik.handleSubmit}>
-                    <div className="mb-2">
-                      <div className="row">
-                        <div className="col-md-2">
-                          <label
-                            htmlFor="firstName"
-                            className="form-label text-end w-100"
-                          >
-                            نام:
-                          </label>
-                        </div>
-                        <div className="col-md-4">
-                          <input
-                            id="firstName"
-                            type="text"
-                            name="firstName"
-                            className="form-control"
-                            placeholder="نام"
-                            value={formik.values.firstName}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                          />
-                          {formik.touched.firstName &&
-                          formik.errors.firstName ? (
-                            <div className="text-danger">
-                              {formik.errors.firstName}
-                            </div>
-                          ) : null}
-                        </div>
-                        <div className="col-md-2">
-                          <label
-                            htmlFor="lastName"
-                            className="form-label text-end w-100"
-                          >
-                            نام خانوادگی:
-                          </label>
-                        </div>
-                        <div className="col-md-4">
-                          <input
-                            id="lastName"
-                            type="text"
-                            name="lastName"
-                            className="form-control"
-                            placeholder="نام خانوادگی"
-                            value={formik.values.lastName}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                          />
-                          {formik.touched.lastName && formik.errors.lastName ? (
-                            <div className="text-danger">
-                              {formik.errors.lastName}
-                            </div>
-                          ) : null}
-                        </div>
-                      </div>
-                      <div className="row mt-2">
-                        <div className="col-md-2">
-                          <label
-                            htmlFor="mobile"
-                            className="form-label text-end w-100"
-                          >
-                            شماره موبایل:
-                          </label>
-                        </div>
-                        <div className="col-md-4">
-                          <input
-                            id="mobile"
-                            type="text"
-                            name="mobile"
-                            className="form-control"
-                            placeholder="شماره موبایل"
-                            value={formik.values.mobile}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                          />
-                          {formik.touched.mobile && formik.errors.mobile ? (
-                            <div className="text-danger">
-                              {formik.errors.mobile}
-                            </div>
-                          ) : null}
-                        </div>
-                        <div className="col-md-2">
-                          <label
-                            htmlFor="email"
-                            className="form-label text-end w-100"
-                          >
-                            ایمیل:
-                          </label>
-                        </div>
-                        <div className="col-md-4">
-                          <input
-                            id="email"
-                            type="email"
-                            name="email"
-                            className="form-control"
-                            placeholder="ایمیل"
-                            value={formik.values.email}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                          />
-                          {formik.touched.email && formik.errors.email ? (
-                            <div className="text-danger">
-                              {formik.errors.email}
-                            </div>
-                          ) : null}
-                        </div>
-                      </div>
-                      <div className="row mt-2">
-                        <div className="col-md-2">
-                          <label
-                            htmlFor="job"
-                            className="form-label text-end w-100"
-                          >
-                            شغل:
-                          </label>
-                        </div>
-                        <div className="col-md-4">
-                          <select
-                            name="job"
-                            id="job"
-                            className="form-control"
-                            value={formik.values.job}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                          >
-                            {jobs.map((j) => (
-                              <option key={j.jobID} value={j.jobID}>
-                                {j.jobTitle}
-                              </option>
-                            ))}
-                          </select>
-                          {formik.touched.job && formik.errors.job ? (
-                            <div className="text-danger">
-                              {formik.errors.job}
-                            </div>
-                          ) : null}
-                        </div>
-                        <div className="col-md-2">
-                          <label
-                            htmlFor="group"
-                            className="form-label text-end w-100"
-                          >
-                            گروه :
-                          </label>
-                        </div>
-                        <div className="col-md-4">
-                          <select
-                            name="group"
-                            id="group"
-                            className="form-control"
-                            value={formik.values.group}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                          >
-                            {groups.map((g) => (
-                              <option key={g.groupID} value={g.groupID}>
-                                {g.groupTitle}
-                              </option>
-                            ))}
-                          </select>
-                          {formik.touched.group && formik.errors.group ? (
-                            <div className="text-danger">
-                              {formik.errors.group}
-                            </div>
-                          ) : null}
-                        </div>
-                      </div>
-                      <div className="row mt-2">
-                        <div className="col-md-2">
-                          <label
-                            htmlFor="photo"
-                            className="form-label text-end w-100"
-                          >
-                            تصویر
-                          </label>
-                        </div>
-                        <div className="col-md-10">
-                          <div {...getRootProps()} className="dropzone">
-                            <input {...getInputProps()} />
-                            <p>فایل تصویر را اینجا رها کنید یا کلیک کنید</p>
+                  <Formik
+                    enableReinitialize
+                    initialValues={initialValues}
+                    validationSchema={contactUpdateSchema}
+                    onSubmit={(values) => {
+                      handleSubmit(values);
+                    }}
+                  >
+                    <Form>
+                      <div className="mb-2">
+                        <div className="row">
+                          <div className="col-md-2">
+                            <label
+                              htmlFor="firstName"
+                              className="form-label text-end w-100"
+                            >
+                              نام:
+                            </label>
                           </div>
-                          {formik.touched.image && formik.errors.image ? (
-                            <div className="text-danger">
-                              {formik.errors.image}
+                          <div className="col-md-4">
+                            <Field
+                              id="firstName"
+                              type="text"
+                              name="firstName"
+                              className="form-control"
+                              placeholder="نام"
+                            />
+                            <ErrorMessage
+                              name="firstName"
+                              component="div"
+                              className="text-danger"
+                            />
+                          </div>
+                          <div className="col-md-2">
+                            <label
+                              htmlFor="lastName"
+                              className="form-label text-end w-100"
+                            >
+                              نام خانوادگی:
+                            </label>
+                          </div>
+                          <div className="col-md-4">
+                            <Field
+                              id="lastName"
+                              type="text"
+                              name="lastName"
+                              className="form-control"
+                              placeholder="نام خانوادگی"
+                            />
+                            <errorMessage
+                              name="lastName"
+                              component="div"
+                              className="text-danger"
+                            />
+                          </div>
+                        </div>
+                        <div className="row mt-2">
+                          <div className="col-md-2">
+                            <label
+                              htmlFor="mobile"
+                              className="form-label text-end w-100"
+                            >
+                              شماره موبایل:
+                            </label>
+                          </div>
+                          <div className="col-md-4">
+                            <Field
+                              id="mobile"
+                              type="text"
+                              name="mobile"
+                              className="form-control"
+                              placeholder="شماره موبایل"
+                            />
+                            <errorMessage
+                              name="mobile"
+                              component="div"
+                              className="text-danger"
+                            />
+                          </div>
+                          <div className="col-md-2">
+                            <label
+                              htmlFor="email"
+                              className="form-label text-end w-100"
+                            >
+                              ایمیل:
+                            </label>
+                          </div>
+                          <div className="col-md-4">
+                            <Field
+                              id="email"
+                              type="email"
+                              name="email"
+                              className="form-control"
+                              placeholder="ایمیل"
+                            />
+                            <errorMessage
+                              name="email"
+                              component="div"
+                              className="text-danger"
+                            />
+                          </div>
+                        </div>
+                        <div className="row mt-2">
+                          <div className="col-md-2">
+                            <label
+                              htmlFor="job"
+                              className="form-label text-end w-100"
+                            >
+                              شغل:
+                            </label>
+                          </div>
+                          <div className="col-md-4">
+                            <Field
+                              name="job"
+                              id="job"
+                              as="select"
+                              className="form-control"
+                            >
+                              {jobs.map((j) => (
+                                <option key={j.jobID} value={j.jobID}>
+                                  {j.jobTitle}
+                                </option>
+                              ))}
+                            </Field>
+                            <errorMessage
+                              name="job"
+                              component="div"
+                              className="text-danger"
+                            />
+                          </div>
+                          <div className="col-md-2">
+                            <label
+                              htmlFor="group"
+                              className="form-label text-end w-100"
+                            >
+                              گروه :
+                            </label>
+                          </div>
+                          <div className="col-md-4">
+                            <Field
+                              name="group"
+                              id="group"
+                              className="form-control"
+                              as="select"
+                            >
+                              {groups.map((g) => (
+                                <option key={g.groupID} value={g.groupID}>
+                                  {g.groupTitle}
+                                </option>
+                              ))}
+                            </Field>
+                            <errorMessage
+                              name="group"
+                              component="div"
+                              className="text-danger"
+                            />
+                          </div>
+                        </div>
+                        <div className="row mt-2">
+                          <div className="col-md-2">
+                            <label
+                              htmlFor="photo"
+                              className="form-label text-end w-100"
+                            >
+                              تصویر
+                            </label>
+                          </div>
+                          <div className="col-md-10">
+                            <div {...getRootProps()} className="dropzone">
+                              <input {...getInputProps()} />
+                              <p>فایل تصویر را اینجا رها کنید یا کلیک کنید</p>
                             </div>
-                          ) : null}
-                          <div className="mt-2">
-                            {image.length > 0 ? (
-                              image.map((file) => (
+
+                            <div className="mt-2">
+                              {image.length > 0 ? (
+                                image.map((file) => (
+                                  <ImgZoom
+                                    key={file.name}
+                                    id={file.name}
+                                    src={file.preview}
+                                    alt={file.name}
+                                    width="100px"
+                                    height="100px"
+                                    crossOrigin="anonymous"
+                                  />
+                                ))
+                              ) : (
                                 <ImgZoom
-                                  key={file.name}
-                                  id={file.name}
-                                  src={file.preview}
-                                  alt={file.name}
+                                  id={contactId}
+                                  src={SERVER_URL + contact.photo}
+                                  alt={contactId}
                                   width="100px"
                                   height="100px"
                                   crossOrigin="anonymous"
                                 />
-                              ))
-                            ) : (
-                              <ImgZoom
-                                id={contactId}
-                                src={SERVER_URL + contact.photo}
-                                alt={contactId}
-                                width="100px"
-                                height="100px"
-                                crossOrigin="anonymous"
-                              />
-                            )}
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="row mt-2">
+                          <div className="col-md-12">
+                            <button
+                              type="submit"
+                              className="btn"
+                              style={{ backgroundColor: GREEN }}
+                            >
+                              <i className="fas fa-plus-circle"></i> ویرایش
+                              مخاطب
+                            </button>
+
+                            <Link
+                              to="/contacts"
+                              className="btn mx-2"
+                              style={{ backgroundColor: PURPLE }}
+                            >
+                              <i className="fas fa-arrow-circle-left"></i>{" "}
+                              بازگشت به صفحه مخاطبین
+                            </Link>
                           </div>
                         </div>
                       </div>
-                      <div className="row mt-2">
-                        <div className="col-md-12">
-                          <button
-                            type="submit"
-                            className="btn"
-                            style={{ backgroundColor: GREEN }}
-                            disabled={formik.isSubmitting}
-                          >
-                            <i className="fas fa-plus-circle"></i> ویرایش مخاطب
-                          </button>
-
-                          <Link
-                            to="/contacts"
-                            className="btn mx-2"
-                            style={{ backgroundColor: PURPLE }}
-                          >
-                            <i className="fas fa-arrow-circle-left"></i> بازگشت
-                            به صفحه مخاطبین
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </form>
+                    </Form>
+                  </Formik>
                 </div>
               </div>
             </div>
