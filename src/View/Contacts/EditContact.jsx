@@ -1,3 +1,8 @@
+/**
+ * @component EditContact
+ * @description کامپوننت ویرایش مخاطب که امکان ویرایش اطلاعات و تصویر مخاطب را فراهم می کند
+ * @returns {JSX.Element} فرم ویرایش مخاطب
+ */
 import { useContext, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -13,13 +18,17 @@ import { ContactContext } from "../../context/contactContext";
 import { contactUpdateSchema } from "../../validations/contcatValidation";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 
+/**
+ * @function EditContact
+ * @description کامپوننت اصلی ویرایش مخاطب
+ */
 const EditContact = () => {
   const { contactId } = useParams();
   const { loading, setLoading, groups, jobs } = useContext(ContactContext);
   const navigate = useNavigate();
-  const [image, setImage] = useState([]);
-  const [oldPhoto, setOldPhoto] = useState("");
-  const [contact, setContact] = useState({});
+  const [image, setImage] = useState([]); // آرایه تصاویر آپلود شده
+  const [oldPhoto, setOldPhoto] = useState(""); // تصویر قبلی مخاطب
+  const [contact, setContact] = useState({}); // اطلاعات مخاطب
   const [initialValues, setInitialValues] = useState({
     firstName: "",
     lastName: "",
@@ -29,6 +38,11 @@ const EditContact = () => {
     group: "",
   });
 
+  /**
+   * @function handleSubmit
+   * @description ارسال فرم ویرایش مخاطب
+   * @param {Object} values - مقادیر فرم
+   */
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
@@ -56,6 +70,10 @@ const EditContact = () => {
     }
   };
 
+  /**
+   * @constant {Object} dropzone
+   * @description تنظیمات آپلود تصویر با استفاده از react-dropzone
+   */
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       "image/*": [".png", ".jpg", ".jpeg", ".gif"],
@@ -78,6 +96,10 @@ const EditContact = () => {
     },
   });
 
+  /**
+   * @function useEffect
+   * @description دریافت اطلاعات مخاطب هنگام لود کامپوننت
+   */
   useEffect(() => {
     const fetchData = async () => {
       try {

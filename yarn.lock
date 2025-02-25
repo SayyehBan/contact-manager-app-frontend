@@ -4627,10 +4627,10 @@ form-data@^4.0.0:
     combined-stream "^1.0.8"
     mime-types "^2.1.12"
 
-formik@2.4.5:
-  version "2.4.5"
-  resolved "https://registry.yarnpkg.com/formik/-/formik-2.4.5.tgz#f899b5b7a6f103a8fabb679823e8fafc7e0ee1b4"
-  integrity sha512-Gxlht0TD3vVdzMDHwkiNZqJ7Mvg77xQNfmBRrNtvzcHZs72TJppSTDKHpImCMJZwcWPBJ8jSQQ95GJzXFf1nAQ==
+formik@2.4.6:
+  version "2.4.6"
+  resolved "https://registry.yarnpkg.com/formik/-/formik-2.4.6.tgz#4da75ca80f1a827ab35b08fd98d5a76e928c9686"
+  integrity sha512-A+2EI7U7aG296q2TLGvNapDNTZp1khVt5Vk0Q/fyfSROss0V/V6+txt2aJnwEos44IxTCW/LYAi/zgWzlevj+g==
   dependencies:
     "@types/hoist-non-react-statics" "^3.3.1"
     deepmerge "^2.1.1"
@@ -7727,10 +7727,10 @@ react-dom@^19.0.0:
   dependencies:
     scheduler "^0.25.0"
 
-react-dropzone@^14.3.6:
-  version "14.3.6"
-  resolved "https://registry.yarnpkg.com/react-dropzone/-/react-dropzone-14.3.6.tgz#ae128e8752daf66db0b4d07531c7ee69dc993387"
-  integrity sha512-U792j+x0rcwH/U/Slv/OBNU/LGFYbDLHKKiJoPhNaOianayZevCt4Y5S0CraPssH/6/wT6xhKDfzdXUgCBS0HQ==
+react-dropzone@^14.3.8:
+  version "14.3.8"
+  resolved "https://registry.yarnpkg.com/react-dropzone/-/react-dropzone-14.3.8.tgz#a7eab118f8a452fe3f8b162d64454e81ba830582"
+  integrity sha512-sBgODnq+lcA4P296DY4wacOZz3JFpD99fp+hb//iBO2HHnyeZU3FwWyXJ6salNpqQdsZrgMrotuko/BdJMV8Ug==
   dependencies:
     attr-accept "^2.2.4"
     file-selector "^2.1.0"
