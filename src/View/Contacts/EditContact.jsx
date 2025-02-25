@@ -10,6 +10,8 @@ import Spinner from "../../components/Spinner";
 import { GREEN, ORANGE, PURPLE } from "../../Utilities/helpers/colors";
 import ImgZoom from "../../components/ImgZoom";
 import { ContactContext } from "../../context/contactContext";
+import { contactUpdateSchema } from "../../validations/contcatValidation";
+import { useFormik } from "formik";
 
 const EditContact = () => {
   const { contactId } = useParams();
@@ -18,6 +20,45 @@ const EditContact = () => {
   const [image, setImage] = useState([]);
   const [oldPhoto, setOldPhoto] = useState("");
   const [contact, setContact] = useState({});
+
+  const formik = useFormik({
+    initialValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      mobile: "",
+      job: "",
+      group: "",
+    },
+    validationSchema: contactUpdateSchema,
+    onSubmit: async (values) => {
+      try {
+        setLoading(true);
+
+        let data = new FormData();
+        data.append("ContactID", contact.contactID);
+        data.append("FirstName", values.firstName);
+        data.append("LastName", values.lastName);
+        data.append("Mobile", values.mobile);
+        data.append("Email", values.email);
+        data.append("JobID", values.job);
+        data.append("GroupID", values.group);
+        if (contact.image) {
+          data.append("File.File", contact.image);
+        }
+
+        const { status } = await putContact(data, oldPhoto);
+        if (status === 200) {
+          navigate("/contacts");
+        }
+      } catch (err) {
+        console.log("Error submitting form:", err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    enableReinitialize: true,
+  });
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
@@ -40,6 +81,7 @@ const EditContact = () => {
       );
     },
   });
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -47,50 +89,29 @@ const EditContact = () => {
         const { data: contactData } = await getContact(contactId);
         setContact(contactData);
         setOldPhoto(contactData.photo);
-        setLoading(false);
+        formik.setValues({
+          firstName: contactData.firstName,
+          lastName: contactData.lastName,
+          email: contactData.email,
+          mobile: contactData.mobile,
+          job: contactData.jobID,
+          group: contactData.groupID,
+        });
       } catch (err) {
         console.log(err);
+      } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [contactId, setLoading]);
 
-  const onContactChange = (event) => {
-    setContact({
-      ...contact,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  const submitForm = async (event) => {
-    event.preventDefault();
-    try {
-      setLoading(true);
-      let data = new FormData();
-      data.append("ContactID", contact.contactID);
-      data.append("FirstName", contact.firstName);
-      data.append("LastName", contact.lastName);
-      data.append("Mobile", contact.mobile);
-      data.append("Email", contact.email);
-      data.append("JobID", contact.jobID);
-      data.append("GroupID", contact.groupID);
-      data.append("File.File", contact.image);
-
-      const { status } = await putContact(data, oldPhoto);
-      setLoading(false);
-      if (status === 200) {
-        navigate("/contacts");
-        if (contact.image !== null) {
-          // window.location.reload();
-        }
-      }
-    } catch (err) {
-      console.log(err);
-      setLoading(false);
-    }
-  };
+    return () => {
+      // Cleanup previews to avoid memory leaks
+      image.forEach((file) => URL.revokeObjectURL(file.preview));
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contactId]);
 
   return (
     <>
@@ -113,7 +134,7 @@ const EditContact = () => {
                 style={{ backgroundColor: "#44475a", borderRadius: "1em" }}
               >
                 <div className="col-md-8">
-                  <form onSubmit={submitForm}>
+                  <form onSubmit={formik.handleSubmit}>
                     <div className="mb-2">
                       <div className="row">
                         <div className="col-md-2">
@@ -131,10 +152,16 @@ const EditContact = () => {
                             name="firstName"
                             className="form-control"
                             placeholder="نام"
-                            required={true}
-                            value={contact.firstName}
-                            onChange={onContactChange}
+                            value={formik.values.firstName}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                           />
+                          {formik.touched.firstName &&
+                          formik.errors.firstName ? (
+                            <div className="text-danger">
+                              {formik.errors.firstName}
+                            </div>
+                          ) : null}
                         </div>
                         <div className="col-md-2">
                           <label
@@ -151,10 +178,15 @@ const EditContact = () => {
                             name="lastName"
                             className="form-control"
                             placeholder="نام خانوادگی"
-                            required={true}
-                            value={contact.lastName}
-                            onChange={onContactChange}
+                            value={formik.values.lastName}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                           />
+                          {formik.touched.lastName && formik.errors.lastName ? (
+                            <div className="text-danger">
+                              {formik.errors.lastName}
+                            </div>
+                          ) : null}
                         </div>
                       </div>
                       <div className="row mt-2">
@@ -173,10 +205,15 @@ const EditContact = () => {
                             name="mobile"
                             className="form-control"
                             placeholder="شماره موبایل"
-                            required={true}
-                            value={contact.mobile}
-                            onChange={onContactChange}
+                            value={formik.values.mobile}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                           />
+                          {formik.touched.mobile && formik.errors.mobile ? (
+                            <div className="text-danger">
+                              {formik.errors.mobile}
+                            </div>
+                          ) : null}
                         </div>
                         <div className="col-md-2">
                           <label
@@ -193,10 +230,15 @@ const EditContact = () => {
                             name="email"
                             className="form-control"
                             placeholder="ایمیل"
-                            required={true}
-                            value={contact.email}
-                            onChange={onContactChange}
+                            value={formik.values.email}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                           />
+                          {formik.touched.email && formik.errors.email ? (
+                            <div className="text-danger">
+                              {formik.errors.email}
+                            </div>
+                          ) : null}
                         </div>
                       </div>
                       <div className="row mt-2">
@@ -210,11 +252,12 @@ const EditContact = () => {
                         </div>
                         <div className="col-md-4">
                           <select
-                            name="jobID"
+                            name="job"
                             id="job"
                             className="form-control"
-                            value={contact.jobID}
-                            onChange={onContactChange}
+                            value={formik.values.job}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                           >
                             {jobs.map((j) => (
                               <option key={j.jobID} value={j.jobID}>
@@ -222,6 +265,11 @@ const EditContact = () => {
                               </option>
                             ))}
                           </select>
+                          {formik.touched.job && formik.errors.job ? (
+                            <div className="text-danger">
+                              {formik.errors.job}
+                            </div>
+                          ) : null}
                         </div>
                         <div className="col-md-2">
                           <label
@@ -233,11 +281,12 @@ const EditContact = () => {
                         </div>
                         <div className="col-md-4">
                           <select
-                            name="groupID"
+                            name="group"
                             id="group"
                             className="form-control"
-                            value={contact.groupID}
-                            onChange={onContactChange}
+                            value={formik.values.group}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                           >
                             {groups.map((g) => (
                               <option key={g.groupID} value={g.groupID}>
@@ -245,8 +294,13 @@ const EditContact = () => {
                               </option>
                             ))}
                           </select>
+                          {formik.touched.group && formik.errors.group ? (
+                            <div className="text-danger">
+                              {formik.errors.group}
+                            </div>
+                          ) : null}
                         </div>
-                      </div>{" "}
+                      </div>
                       <div className="row mt-2">
                         <div className="col-md-2">
                           <label
@@ -261,6 +315,11 @@ const EditContact = () => {
                             <input {...getInputProps()} />
                             <p>فایل تصویر را اینجا رها کنید یا کلیک کنید</p>
                           </div>
+                          {formik.touched.image && formik.errors.image ? (
+                            <div className="text-danger">
+                              {formik.errors.image}
+                            </div>
+                          ) : null}
                           <div className="mt-2">
                             {image.length > 0 ? (
                               image.map((file) => (
@@ -271,6 +330,7 @@ const EditContact = () => {
                                   alt={file.name}
                                   width="100px"
                                   height="100px"
+                                  crossOrigin="anonymous"
                                 />
                               ))
                             ) : (
@@ -280,6 +340,7 @@ const EditContact = () => {
                                 alt={contactId}
                                 width="100px"
                                 height="100px"
+                                crossOrigin="anonymous"
                               />
                             )}
                           </div>
@@ -291,6 +352,7 @@ const EditContact = () => {
                             type="submit"
                             className="btn"
                             style={{ backgroundColor: GREEN }}
+                            disabled={formik.isSubmitting}
                           >
                             <i className="fas fa-plus-circle"></i> ویرایش مخاطب
                           </button>

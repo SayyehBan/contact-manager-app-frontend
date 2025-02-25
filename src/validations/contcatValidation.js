@@ -26,5 +26,5 @@ export const contactInsertSchema = contactSchema.shape({
 });
 
 export const contactUpdateSchema = contactSchema.shape({
-    image: imageSchema.nullable()
+
 });
