@@ -65,10 +65,7 @@ const App = () => {
       [event.target.name]: event.target.value,
     });
   };
-  const createContactForm = async (event) => {
-    event.preventDefault();
-
-
+  const createContactForm = async (contact) => {
     let data = new FormData();
     data.append("FirstName", contact.firstName);
     data.append("LastName", contact.lastName);
@@ -78,19 +75,13 @@ const App = () => {
     data.append("GroupID", parseInt(contact.group));
     data.append("File.File", contact.image);
     try {
-      await contactInsertSchema.validate(contact, { abortEarly: false });
       setLoading(true);
       await postContact(data, (progress) => {
         console.log(progress);
       });
-      setContact({});
-      setErrors([]);
       navigate("/contacts");
       setLoading(false);
     } catch (err) {
-      console.log(err.message);
-      console.log(err.inner);
-      setErrors(err.inner);
       setLoading(false);
     }
   };
@@ -141,7 +132,6 @@ const App = () => {
         filteredContacts,
         groups,
         jobs,
-        errors,
         onContactChange,
         deleteContact: confirmDelete,
         createContact: createContactForm,

@@ -5,36 +5,20 @@ import { useContext, useEffect, useState } from "react";
 import ImgZoom from "../../components/ImgZoom";
 import Spinner from "../../components/Spinner";
 import { ContactContext } from "../../context/contactContext";
+import { ErrorMessage, Field, Form, Formik } from "formik";
+import { contactInsertSchema } from "../../validations/contcatValidation";
 
-/**
- * کامپوننت افزودن مخاطب جدید
- * این کامپوننت فرم اضافه کردن مخاطب جدید را نمایش می دهد
- * و شامل فیلدهای نام، نام خانوادگی، موبایل، ایمیل، شغل، گروه و تصویر می باشد
- */
 const AddContact = () => {
-  // دریافت متغیرها و توابع مورد نیاز از کانتکست
-  const {
-    loading,
-    contact,
-    onContactChange,
-    groups,
-    jobs,
-    createContact,
-    errors,
-  } = useContext(ContactContext);
-
-  // استیت نگهداری تصویر
+  const { loading, groups, jobs, createContact } = useContext(ContactContext);
   const [image, setImage] = useState([]);
 
-  // تنظیمات آپلود تصویر با استفاده از react-dropzone
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       "image/*": [".png", ".jpg", ".jpeg", ".gif"],
     },
-    maxSize: 1024 * 1024, // حداکثر سایز 1 مگابایت
-    maxFiles: 1, // حداکثر یک فایل
+    maxSize: 1024 * 1024,
+    maxFiles: 1,
     onDrop: (acceptedFiles) => {
-      // ذخیره تصویر در استیت
       setImage(
         acceptedFiles.map((file) =>
           Object.assign(file, {
@@ -42,17 +26,9 @@ const AddContact = () => {
           })
         )
       );
-      // ارسال تصویر به کانتکست
-      onContactChange({
-        target: {
-          name: "image",
-          value: acceptedFiles[0],
-        },
-      });
     },
   });
 
-  // پاکسازی URL های موقت تصاویر هنگام آنمانت شدن کامپوننت
   useEffect(() => {
     return () => image.forEach((file) => URL.revokeObjectURL(file.preview));
   }, [image]);
@@ -64,7 +40,6 @@ const AddContact = () => {
       ) : (
         <>
           <section className="p-3">
-            {/* تصویر پس زمینه */}
             <img
               alt=""
               src={require("../../assets/man-taking-note.png")}
@@ -92,255 +67,257 @@ const AddContact = () => {
 
               <div className="row mt-5">
                 <div className="col-md-12">
-                  <form onSubmit={(e) => e.preventDefault()}>
-                    <div className="mb-2">
-                      {/* بخش نام و نام خانوادگی */}
-                      <div className="row">
-                        <div className="col-md-2">
-                          <label
-                            htmlFor="firstName"
-                            className="form-label text-end w-100"
-                          >
-                            نام :
-                          </label>
-                        </div>
-                        <div className="col-md-4">
-                          <input
-                            id="firstName"
-                            type="text"
-                            name="firstName"
-                            value={contact.firstName}
-                            onChange={onContactChange}
-                            className="form-control"
-                            placeholder="نام"
-                          />
-                          {errors?.find((err) => err.path === "firstName") && (
-                            <small className="text-danger">
-                              {
-                                errors.find((err) => err.path === "firstName")
-                                  .message
-                              }
-                            </small>
-                          )}
-                        </div>
-                        <div className="col-md-2">
-                          <label
-                            htmlFor="lastName"
-                            className="form-label text-end w-100"
-                          >
-                            نام خانوادگی :
-                          </label>
-                        </div>
-                        <div className="col-md-4">
-                          <input
-                            id="lastName"
-                            type="text"
-                            name="lastName"
-                            className="form-control"
-                            placeholder="نام خانوادگی"
-                            value={contact.lastName}
-                            onChange={onContactChange}
-                          />
-                          {errors?.find((err) => err.path === "lastName") && (
-                            <small className="text-danger">
-                              {
-                                errors.find((err) => err.path === "lastName")
-                                  .message
-                              }
-                            </small>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* بخش موبایل و ایمیل */}
-                      <div className="row mt-2">
-                        <div className="col-md-2">
-                          <label
-                            htmlFor="mobile"
-                            className="form-label text-end w-100"
-                          >
-                            شماره موبایل :
-                          </label>
-                        </div>
-                        <div className="col-md-4">
-                          <input
-                            id="mobile"
-                            type="text"
-                            name="mobile"
-                            className="form-control"
-                            placeholder="شماره موبایل"
-                            value={contact.mobile}
-                            onChange={onContactChange}
-                          />
-                          {errors?.find((err) => err.path === "mobile") && (
-                            <small className="text-danger">
-                              {
-                                errors.find((err) => err.path === "mobile")
-                                  .message
-                              }
-                            </small>
-                          )}
-                        </div>
-                        <div className="col-md-2">
-                          <label
-                            htmlFor="email"
-                            className="form-label text-end w-100"
-                          >
-                            ایمیل :
-                          </label>
-                        </div>
-                        <div className="col-md-4">
-                          <input
-                            id="email"
-                            type="email"
-                            name="email"
-                            className="form-control"
-                            placeholder="ایمیل"
-                            value={contact.email}
-                            onChange={onContactChange}
-                          />
-                          {errors?.find((err) => err.path === "email") && (
-                            <small className="text-danger">
-                              {
-                                errors.find((err) => err.path === "email")
-                                  .message
-                              }
-                            </small>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* بخش شغل و گروه */}
-                      <div className="row mt-2">
-                        <div className="col-md-2">
-                          <label
-                            htmlFor="job"
-                            className="form-label text-end w-100"
-                          >
-                            شغل :
-                          </label>
-                        </div>
-                        <div className="col-md-4">
-                          <select
-                            name="job"
-                            id="job"
-                            className="form-control"
-                            value={contact.jobID}
-                            onChange={onContactChange}
-                          >
-                            {jobs.map((job) => (
-                              <option
-                                key={job.jobID}
-                                value={parseInt(job.jobID)}
+                  <Formik
+                    initialValues={{
+                      firstName: "",
+                      lastName: "",
+                      mobile: "",
+                      email: "",
+                      job: "",
+                      group: "",
+                      image: null,
+                    }}
+                    validationSchema={contactInsertSchema}
+                    onSubmit={(values) => {
+                      createContact(values);
+                    }}
+                  >
+                    {({ setFieldValue }) => (
+                      <Form>
+                        <div className="mb-2">
+                          <div className="row">
+                            <div className="col-md-2">
+                              <label
+                                htmlFor="firstName"
+                                className="form-label text-end w-100"
                               >
-                                {job.jobTitle}
-                              </option>
-                            ))}
-                          </select>
-                          {errors?.find((err) => err.path === "job") && (
-                            <small className="text-danger">
-                              {errors.find((err) => err.path === "job").message}
-                            </small>
-                          )}
-                        </div>
-
-                        <div className="col-md-2">
-                          <label
-                            htmlFor="group"
-                            className="form-label text-end w-100"
-                          >
-                            گروه :
-                          </label>
-                        </div>
-                        <div className="col-md-4">
-                          <select
-                            name="group"
-                            id="group"
-                            className="form-control"
-                            value={contact.groupID}
-                            onChange={onContactChange}
-                          >
-                            {groups.map((group) => (
-                              <option
-                                key={group.groupID}
-                                value={parseInt(group.groupID)}
-                              >
-                                {group.groupTitle}
-                              </option>
-                            ))}
-                          </select>
-                          {errors?.find((err) => err.path === "group") && (
-                            <small className="text-danger">
-                              {
-                                errors.find((err) => err.path === "group")
-                                  .message
-                              }
-                            </small>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* بخش آپلود تصویر */}
-                      <div className="row mt-2">
-                        <div className="col-md-2">
-                          <label
-                            htmlFor="photo"
-                            className="form-label text-end w-100"
-                          >
-                            تصویر
-                          </label>
-                        </div>
-                        <div className="col-md-10">
-                          <div {...getRootProps()} className="dropzone">
-                            <input {...getInputProps()} />
-                            <p>فایل تصویر را اینجا رها کنید یا کلیک کنید</p>
-                          </div>
-                          <div className="mt-2">
-                            {image.map((file) => (
-                              <ImgZoom
-                                id={file.name}
-                                src={file.preview}
-                                alt={file.name}
-                                width="100px"
-                                height="100px"
+                                نام :
+                              </label>
+                            </div>
+                            <div className="col-md-4">
+                              <Field
+                                id="firstName"
+                                type="text"
+                                name="firstName"
+                                className="form-control"
+                                placeholder="نام"
                               />
-                            ))}
+                              <ErrorMessage
+                                name="firstName"
+                                component="div"
+                                className="text-danger"
+                              />
+                            </div>
+                            <div className="col-md-2">
+                              <label
+                                htmlFor="lastName"
+                                className="form-label text-end w-100"
+                              >
+                                نام خانوادگی :
+                              </label>
+                            </div>
+                            <div className="col-md-4">
+                              <Field
+                                id="lastName"
+                                type="text"
+                                name="lastName"
+                                className="form-control"
+                                placeholder="نام خانوادگی"
+                              />
+                              <ErrorMessage
+                                name="lastName"
+                                component="div"
+                                className="text-danger"
+                              />
+                            </div>
                           </div>
-                          {errors?.find((err) => err.path === "image") && (
-                            <small className="text-danger">
-                              {
-                                errors.find((err) => err.path === "image")
-                                  .message
-                              }
-                            </small>
-                          )}
-                        </div>
-                      </div>
 
-                      {/* دکمه های عملیات */}
-                      <div className="row mt-2">
-                        <div className="col-md-12">
-                          <button
-                            type="submit"
-                            className="btn"
-                            style={{ backgroundColor: GREEN }}
-                            onClick={createContact}
-                          >
-                            <i className="fas fa-plus-circle"></i> ثبت مخاطب
-                          </button>
+                          <div className="row mt-2">
+                            <div className="col-md-2">
+                              <label
+                                htmlFor="mobile"
+                                className="form-label text-end w-100"
+                              >
+                                شماره موبایل :
+                              </label>
+                            </div>
+                            <div className="col-md-4">
+                              <Field
+                                id="mobile"
+                                type="text"
+                                name="mobile"
+                                className="form-control"
+                                placeholder="شماره موبایل"
+                              />
+                              <ErrorMessage
+                                name="mobile"
+                                component="div"
+                                className="text-danger"
+                              />
+                            </div>
+                            <div className="col-md-2">
+                              <label
+                                htmlFor="email"
+                                className="form-label text-end w-100"
+                              >
+                                ایمیل :
+                              </label>
+                            </div>
+                            <div className="col-md-4">
+                              <Field
+                                id="email"
+                                type="email"
+                                name="email"
+                                className="form-control"
+                                placeholder="ایمیل"
+                              />
+                              <ErrorMessage
+                                name="email"
+                                component="div"
+                                className="text-danger"
+                              />
+                            </div>
+                          </div>
 
-                          <Link
-                            to="/contacts"
-                            className="btn mx-2"
-                            style={{ backgroundColor: PURPLE }}
-                          >
-                            <i className="fas fa-arrow-circle-left"></i> بازگشت
-                            به صفحه مخاطبین
-                          </Link>
+                          <div className="row mt-2">
+                            <div className="col-md-2">
+                              <label
+                                htmlFor="job"
+                                className="form-label text-end w-100"
+                              >
+                                شغل :
+                              </label>
+                            </div>
+                            <div className="col-md-4">
+                              <Field
+                                name="job"
+                                id="job"
+                                className="form-control"
+                                as="select"
+                              >
+                                {jobs.map((job) => (
+                                  <option
+                                    key={job.jobID}
+                                    value={parseInt(job.jobID)}
+                                  >
+                                    {job.jobTitle}
+                                  </option>
+                                ))}
+                              </Field>
+                              <ErrorMessage
+                                name="job"
+                                component="div"
+                                className="text-danger"
+                              />
+                            </div>
+
+                            <div className="col-md-2">
+                              <label
+                                htmlFor="group"
+                                className="form-label text-end w-100"
+                              >
+                                گروه :
+                              </label>
+                            </div>
+                            <div className="col-md-4">
+                              <Field
+                                name="group"
+                                id="group"
+                                className="form-control"
+                                as="select"
+                              >
+                                {groups.map((group) => (
+                                  <option
+                                    key={group.groupID}
+                                    value={parseInt(group.groupID)}
+                                  >
+                                    {group.groupTitle}
+                                  </option>
+                                ))}
+                              </Field>
+                              <ErrorMessage
+                                name="group"
+                                component="div"
+                                className="text-danger"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="row mt-2">
+                            <div className="col-md-2">
+                              <label
+                                htmlFor="photo"
+                                className="form-label text-end w-100"
+                              >
+                                تصویر
+                              </label>
+                            </div>
+                            <div className="col-md-10">
+                              <div
+                                {...getRootProps()}
+                                className="dropzone"
+                                onClick={() => {
+                                  const fileInput =
+                                    document.createElement("input");
+                                  fileInput.type = "file";
+                                  fileInput.accept = "image/*";
+                                  fileInput.onchange = (e) => {
+                                    const file = e.target.files[0];
+                                    if (file) {
+                                      const preview = URL.createObjectURL(file);
+                                      setImage([{ ...file, preview }]);
+                                      setFieldValue("image", file);
+                                    }
+                                  };
+                                  fileInput.click();
+                                }}
+                              >
+                                <input {...getInputProps()} />
+                                <p>فایل تصویر را اینجا رها کنید یا کلیک کنید</p>
+                              </div>
+                              <div className="mt-2">
+                                {image.map((file) => (
+                                  <ImgZoom
+                                    key={file.name}
+                                    src={file.preview}
+                                    alt={file.name}
+                                    width="100px"
+                                    height="100px"
+                                  />
+                                ))}
+                              </div>
+                              <ErrorMessage
+                                name="image"
+                                component="div"
+                                className="text-danger"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="row mt-2">
+                            <div className="col-md-12">
+                              <button
+                                type="submit"
+                                className="btn"
+                                style={{ backgroundColor: GREEN }}
+                              >
+                                <i className="fas fa-plus-circle"></i> ثبت مخاطب
+                              </button>
+
+                              <Link
+                                to="/contacts"
+                                className="btn mx-2"
+                                style={{ backgroundColor: PURPLE }}
+                              >
+                                <i className="fas fa-arrow-circle-left"></i>{" "}
+                                بازگشت به صفحه مخاطبین
+                              </Link>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  </form>{" "}
+                      </Form>
+                    )}
+                  </Formik>
                 </div>
               </div>
             </div>
