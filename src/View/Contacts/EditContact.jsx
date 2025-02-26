@@ -18,6 +18,7 @@ import { ContactContext } from "../../context/contactContext";
 import { contactUpdateSchema } from "../../validations/contcatValidation";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { useImmer } from "use-immer";
+import { toast } from "react-toastify";
 
 /**
  * @function EditContact
@@ -45,7 +46,6 @@ const EditContact = () => {
     job: "",
     group: "",
   });
-
   /**
    * @function handleSubmit
    * @description ارسال فرم ویرایش مخاطب
@@ -78,6 +78,7 @@ const EditContact = () => {
         setContacts(updateContact);
         setFilteredContacts(updateContact);
         navigate("/contacts");
+        toast.info("ویرایش با موفقیت انجام شد.", { icon: "🟢" });
       }
     } catch (err) {
       console.log("Error submitting form:", err);

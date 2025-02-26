@@ -19,6 +19,7 @@ import {
 } from "./View/Contacts";
 import _ from 'lodash'
 import { useImmer } from "use-immer";
+import { toast, ToastContainer } from "react-toastify";
 const App = () => {
   const [loading, setLoading] = useImmer(false);
   const [contacts, setContacts] = useImmer([]);
@@ -80,7 +81,7 @@ const App = () => {
         });
       }
       navigate("/contacts");
-
+      toast.success("ثبت با موفقیت انجام شد.", { icon: "🟢" });
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -104,6 +105,7 @@ const App = () => {
           const updatedFiltered = draft.filter((c) => c.contactID !== contactId);
           return updatedFiltered;
         });
+        toast.success("حذف با موفقیت انجام شد.", { icon: "🟢" });
         setLoading(false);
       }
     } catch (err) {
@@ -141,6 +143,7 @@ const App = () => {
       }}
     >
       <div className="App">
+        <ToastContainer rtl={true} position="top-right" theme="colored" />
         <Navbar />
         {showDialog && (
           <div
